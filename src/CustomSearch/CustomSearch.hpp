@@ -115,12 +115,12 @@ class $modify(GrDLevelBrowserLayer, LevelBrowserLayer) {
 
     void nextBtnActions() {
         hideStuff();
-        LevelBrowserLayer::loadPage(BrType::getSearchObject(499 - this->m_fields->m_currentPage * 10, 489 - this->m_fields->m_currentPage * 10));
+        LevelBrowserLayer::loadPage(BrType::getSearchObject(240 - this->m_fields->m_currentPage * 10, 240 - this->m_fields->m_currentPage * 10));
     }
 
     void hideStuff() {
         this->m_pageBtn->setVisible(false);
-        this->m_countText->setString(fmt::format("{} to {} of 250", this->m_fields->m_currentPage * 10 + 1, this->m_fields->m_currentPage * 10 + 10).c_str());
+        this->m_countText->setString(fmt::format("{} to {} of 250", 240 - this->m_fields->m_currentPage * 10 + 1, this->m_fields->m_currentPage * 10 + 10).c_str());
     }
 };
 
