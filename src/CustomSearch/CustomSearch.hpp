@@ -43,7 +43,7 @@ class $modify(GrDLevelBrowserLayer, LevelBrowserLayer) {
         int page = this->m_fields->m_currentPage;
         this->m_fields->m_lowIdx = page * 10;
 
-        LevelBrowserLayer::init(BrType::getSearchObject(489, 0));
+        LevelBrowserLayer::init(BrType::getSearchObject(24, 0));
         return true;
     }
 
