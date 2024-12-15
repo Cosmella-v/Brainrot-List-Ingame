@@ -1,0 +1,14 @@
+{
+	"geode": "4.0.1",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "viper.brainrot_list",
+	"name": "Brainrot List",
+	"version": "v1.0.0",
+	"developer": "Viper",
+	"description": "Be able to view the brainrot list ingame"
+}
