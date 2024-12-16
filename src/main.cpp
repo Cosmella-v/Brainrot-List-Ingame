@@ -12,14 +12,12 @@ class $modify(MyMenuLayer, MenuLayer) {
         }
 		if (level_map.empty()) {
 				getlistjson([=](matjson::Value response) {
-					log::debug("Callback executed with response: {}", response.dump());
 					int order = 0;
 					for (const auto& item : response.asArray().unwrap()) {
 						order+=1;
 						int curord = order;
 						getleveljson(item.asString().unwrap(), [=](matjson::Value response) {
 							level_map[curord] = response;
-							log::debug("Level at {} has {}", curord,level_map[curord].dump());
 						});
 					}
 			});

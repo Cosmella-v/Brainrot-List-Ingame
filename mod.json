@@ -6,9 +6,14 @@
 		"mac": "2.2074",
 		"ios": "2.2074"
 	},
-	"id": "viper.brainrot_list",
-	"name": "Brainrot List",
+	"id": "viper.br_list",
+	"name": "Integrated BRL",
 	"version": "v1.0.0",
 	"developer": "Viper",
-	"description": "Be able to view the brainrot list ingame"
+	"description": "Be able to view the BRL ingame",
+	"resources": {
+		"sprites": [
+			"images/**/*.png"
+		]
+	}
 }
