@@ -10,11 +10,6 @@ class $modify(LevelInfoLayer) {
 		if (!LevelInfoLayer::init(p0, p1)) {
 			return false;
 		}
-         if (BrType::firstTimeOpen) {
-                BrType::parseRequestString(level_map);
-                BrType::firstTimeOpen = false;
-                BrType::filterType = -1;
-        }
 		cocos2d::CCPoint difficultyPos = m_difficultySprite->getPosition() + CCPoint { .0f, .0f };
 		int zOrder = m_difficultySprite->getZOrder();
 		if (BrType::find(p0->m_levelID) ) {

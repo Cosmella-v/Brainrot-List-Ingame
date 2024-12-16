@@ -7,11 +7,6 @@ using namespace geode::prelude;
 class $modify(LevelCell) {
 	void loadFromLevel(GJGameLevel* p0) {
 		LevelCell::loadFromLevel(p0);
-		 if (BrType::firstTimeOpen) {
-                BrType::parseRequestString(level_map);
-                BrType::firstTimeOpen = false;
-                BrType::filterType = -1;
-        }
 
 		auto difficultyNode = m_mainLayer->getChildByID("difficulty-container");
         GJDifficultySprite* difficultySpr = static_cast<GJDifficultySprite*>(difficultyNode->getChildByID("difficulty-sprite"));
