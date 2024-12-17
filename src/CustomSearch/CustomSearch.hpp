@@ -42,7 +42,9 @@ double getFullDoubleTime() {
 
 
 class $modify(BRlist, LevelBrowserLayer) {
-
+    static void onModify(auto& self) {
+        (void)self.setHookPriority("LevelBrowserLayer::init", INT_MIN/2-1); 
+    }
     struct Fields {
         int m_currentPage = 0;
         int m_furthestLoadedPage = 0;
@@ -66,6 +68,7 @@ class $modify(BRlist, LevelBrowserLayer) {
         this->m_fields->m_lowIdx = page * 10;
         this->setUserObject("brl_modified", CCBool::create(true));
         LevelBrowserLayer::init(BrType::getSearchObject(10, 0));
+        hideStuff();
         return true;
     }
 
@@ -187,10 +190,10 @@ class $modify(BRlist, LevelBrowserLayer) {
         }
         this->m_fields->m_stopratelimit = getFullDoubleTime() + time;
     }
-
     void hideStuff() {
         if (CCNode* last_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/last-button")) {
             typeinfo_cast<CCMenuItemSpriteExtra*>(last_Betterinfo)->m_pfnSelector = (cocos2d::SEL_MenuHandler)(&BRlist::lastpage);
+             last_Betterinfo->setVisible(this->m_fields->m_currentPage < (BrType::LevelID.size() / 10));
         }
         if (CCNode* filter_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/filter-button")) {
             filter_Betterinfo->setVisible(false);

@@ -22,13 +22,14 @@ class $modify(HookSearch, LevelSearchLayer) {
 		auto BRL_Button = CCMenuItemSpriteExtra::create(
 			 CircleButtonSprite::createWithSprite(
                 "list_icon.png"_spr,
-                1.15,
+                1.1,
                 CircleBaseColor::DarkPurple,
                 CircleBaseSize::Small
             ),
 			this,
 			menu_selector(HookSearch::pushbtncustom)
 		);
+		BRL_Button->setID("BLR/Button"_spr);
 		Filter->addChild(BRL_Button);
 		Filter->updateLayout();
 		return true;
