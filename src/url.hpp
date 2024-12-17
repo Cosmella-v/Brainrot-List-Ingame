@@ -9,12 +9,12 @@ using namespace geode::prelude;
 
 static std::map<int,matjson::Value> level_map;
 
-void RequestApi(bool retry,std::string Url, std::function<void(matjson::Value)> fun) {
+inline void RequestApi(bool retry,std::string Url, std::function<void(matjson::Value)> fun) {
       web::WebRequest().get(Url).listen(
         [=](auto getval) {
             auto json = getval->json().unwrapOr("failed");
             if (json == "failed") {
-                log::error("Failed at {}",Url);
+                //log::error("Failed at {}",Url);
                 if (retry) {
                      RequestApi(retry,Url,fun);
                 } 
@@ -36,16 +36,16 @@ void RequestApi(bool retry,std::string Url, std::function<void(matjson::Value)> 
     );
 }
 
-static void getlistjson(std::function<void(matjson::Value)> fun) {
-   log::debug("should send https://br-list.pages.dev/data/_list.json");
+inline static void getlistjson(std::function<void(matjson::Value)> fun) {
+   //log::debug("should send https://br-list.pages.dev/data/_list.json");
     RequestApi(false,"https://br-list.pages.dev/data/_list.json", fun);
 }
 
-static void getpackjson(std::function<void(matjson::Value)> fun) {
+inline static void getpackjson(std::function<void(matjson::Value)> fun) {
     RequestApi(false,"https://br-list.pages.dev/data/_packlist.json", fun);
 }
 
-static void getleveljson(const std::string& name, std::function<void(matjson::Value)> fun) {
+inline static void getleveljson(const std::string& name, std::function<void(matjson::Value)> fun) {
     std::string finalurl;
     for (char c : name) {
         if (c == ' ') {
@@ -54,6 +54,6 @@ static void getleveljson(const std::string& name, std::function<void(matjson::Va
             finalurl += c; 
         }
     }
-    log::debug("getting info for {}",name);
+    //log::debug("getting info for {}",name);
     RequestApi(true,"https://br-list.pages.dev/data/" + finalurl + ".json", fun);
 }

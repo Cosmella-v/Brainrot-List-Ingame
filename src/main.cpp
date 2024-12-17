@@ -2,14 +2,44 @@
 #include <Geode/modify/MenuLayer.hpp>
 #include "url.hpp" 
 #include "CustomSearch/CustomSearch.hpp" 
+#include <Geode/modify/LevelSearchLayer.hpp>
 
 using namespace geode::prelude;
 
-class $modify(MyMenuLayer, MenuLayer) {
+class $modify(HookSearch, LevelSearchLayer) {
+	bool init(int in) {
+		if (!LevelSearchLayer::init(in)) {
+			return false;
+		}
+		CCNode* Filter;
+		Filter = this->getChildByID("other-filter-menu");
+		if (!Filter) {
+		  Filter = this->getChildByType<CCMenu>(0);
+		  if (!Filter) {
+			return true;
+		  }
+		}
+		auto BRL_Button = CCMenuItemSpriteExtra::create(
+			 CircleButtonSprite::createWithSprite(
+                "list_icon.png"_spr,
+                1.15,
+                CircleBaseColor::DarkPurple,
+                CircleBaseSize::Small
+            ),
+			this,
+			menu_selector(HookSearch::pushbtncustom)
+		);
+		Filter->addChild(BRL_Button);
+		Filter->updateLayout();
+		return true;
+	}
+	void pushbtncustom(CCObject*) {
+		change_scene();
+    }
+};
+
+class $modify(MenuLayer) {
     bool init() {
-        if (!MenuLayer::init()) {
-            return false;
-        }
 		if (level_map.empty()) {
 				getlistjson([=](matjson::Value response) {
 					int order = 0;
@@ -22,26 +52,6 @@ class $modify(MyMenuLayer, MenuLayer) {
 					}
 			});
 		}
-
-		auto myButton = CCMenuItemSpriteExtra::create(
-			CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png"),
-			this,
-			menu_selector(MyMenuLayer::onMyButton)
-		);
-
-		auto menu = this->getChildByID("bottom-menu");
-		menu->addChild(myButton);
-
-		myButton->setID("my-button"_spr);
-
-		menu->updateLayout();
-
-
-
-        return true;
-    }
-
-    void onMyButton(CCObject*) {
-		change_scene();
+        return MenuLayer::init();
     }
 };

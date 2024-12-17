@@ -8,6 +8,9 @@
 	},
 	"id": "viper.br_list",
 	"name": "Integrated BRL",
+	"links": {
+		"source": "https://github.com/MuhXd/Brainrot-List-Ingame"
+	},
 	"version": "v1.0.0",
 	"developer": "Viper",
 	"description": "Be able to view the BRL ingame",
