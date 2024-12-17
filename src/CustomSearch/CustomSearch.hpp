@@ -210,17 +210,19 @@ class $modify(BRlist, LevelBrowserLayer) {
         this->m_countText->setString((fmt::format("Showing levels {}-{}{} out of {}",(this->m_fields->m_currentPage) * 10+1,clamp((this->m_fields->m_currentPage+1) * 10, 0,BrType::LevelID.size() ),islegacy ,BrType::LevelID.size() ).c_str()));
         this->m_pageText->setString(fmt::format("{}",this->m_fields->m_currentPage+1).c_str());
     }
-    void updatePageLabel() {
-        LevelBrowserLayer::updatePageLabel();
-        if (!this->m_fields->isBrainrot) {
-            return;
+    #ifndef GEODE_IS_MACOS
+        void updatePageLabel() {
+            LevelBrowserLayer::updatePageLabel();
+            if (!this->m_fields->isBrainrot) {
+                return;
+            }
+            if (this->m_searchObject->m_searchType != SearchType::Type19) {
+                return;
+            }
+            if (this->m_pageBtn) {
+                this->m_pageBtn->setVisible(true);
+            }
         }
-        if (this->m_searchObject->m_searchType != SearchType::Type19) {
-            return;
-        }
-        if (this->m_pageBtn) {
-            this->m_pageBtn->setVisible(true);
-        }
-    }
+    #endif
 };
 
