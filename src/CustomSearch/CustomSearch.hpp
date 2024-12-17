@@ -153,7 +153,6 @@ class $modify(BRlist, LevelBrowserLayer) {
     }
 
     void onPrevPage(CCObject* sender) {
-
         if (!this->m_fields->isBrainrot) {
             return LevelBrowserLayer::onPrevPage(sender);
         }
@@ -169,6 +168,9 @@ class $modify(BRlist, LevelBrowserLayer) {
     void fixtimeout(auto h) {
         LevelBrowserLayer::loadPage(BrType::getSearchObject( ((BrType::LevelID.size() - 10 - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1, (((BrType::LevelID.size()) - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1 ));
         this->m_pageBtn->setVisible(true);
+        if (CCNode* first_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/first-button")) {
+            first_Betterinfo->setVisible(this->m_fields->m_currentPage != 0);
+        }
     }
     void nextBtnActions() {
         hideStuff();
