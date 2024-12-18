@@ -14,6 +14,8 @@
 #ifndef GEODE_IS_ANDROID
 #include <sys/timeb.h>
 #endif
+double timeBD = 0;
+double m_stopratelimit = 0;
 
 using namespace std::chrono;
 
@@ -50,7 +52,6 @@ class $modify(BRlist, LevelBrowserLayer) {
         int m_furthestLoadedPage = 0;
         int m_lowIdx = 0;
         bool isBrainrot = false;
-        int m_stopratelimit = 0;
     };
     bool init(GJSearchObject* p0) {
         this->m_fields->isBrainrot = BrType::isSearchingBR;
@@ -169,26 +170,27 @@ class $modify(BRlist, LevelBrowserLayer) {
         
     }
     void fixtimeout(auto h) {
+        m_stopratelimit = getFullDoubleTime() + timeBD;
         LevelBrowserLayer::loadPage(BrType::getSearchObject( ((BrType::LevelID.size() - 10 - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1, (((BrType::LevelID.size()) - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1 ));
         this->m_pageBtn->setVisible(true);
         if (CCNode* first_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/first-button")) {
             first_Betterinfo->setVisible(this->m_fields->m_currentPage != 0);
         }
+        hideStuff();
     }
     void nextBtnActions() {
         hideStuff();
-        auto time = 0.85 - (getFullDoubleTime() - this->m_fields->m_stopratelimit);
-        if(time < 0) {
-            time = 0;
+        timeBD = 0.85 - (getFullDoubleTime() - m_stopratelimit);
+        if(timeBD < 0) {
+            timeBD = 0;
             fixtimeout(nullptr);
         } else {
             if (CCNode* CFix = this->m_list->m_listView) {
                 CFix->setVisible(false);
             }
             this->m_circle->setVisible(true);
-            this->getScheduler()->scheduleSelector((cocos2d::SEL_SCHEDULE)(&BRlist::fixtimeout), this, 1, 0, time, false);
+            this->getScheduler()->scheduleSelector((cocos2d::SEL_SCHEDULE)(&BRlist::fixtimeout), this, 1, 0, timeBD, false);
         }
-        this->m_fields->m_stopratelimit = getFullDoubleTime() + time;
     }
     void hideStuff() {
         if (CCNode* last_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/last-button")) {
@@ -202,16 +204,44 @@ class $modify(BRlist, LevelBrowserLayer) {
             typeinfo_cast<CCMenuItemSpriteExtra*>(first_Betterinfo)->m_pfnSelector = (cocos2d::SEL_MenuHandler)(&BRlist::firstpage);
             first_Betterinfo->setVisible(this->m_fields->m_currentPage != 0);
         }
+        auto prevBtn = this->m_leftArrow;
+        auto nextBtn = this->m_rightArrow;
+
+        prevBtn->setVisible(true);
+        nextBtn->setVisible(true);
+
+        if (this->m_fields->m_currentPage <= 0) {
+            prevBtn->setVisible(false);
+        } else if (this->m_fields->m_currentPage >= (BrType::LevelID.size() / 10)) {
+            nextBtn->setVisible(false);
+        }
         this->m_pageBtn->setVisible(true);
         std::string islegacy = "";
         if ((this->m_fields->m_currentPage) * 10 +1 > 250) {
             islegacy = " (Legacy)";
         }
-        this->m_countText->setString((fmt::format("Showing levels {}-{}{} out of {}",(this->m_fields->m_currentPage) * 10+1,clamp((this->m_fields->m_currentPage+1) * 10, 0,BrType::LevelID.size() ),islegacy ,BrType::LevelID.size() ).c_str()));
+         if (level_map.empty()) { 
+            getlistjson([=](matjson::Value response) {
+					int order = 0;
+					for (const auto& item : response.asArray().unwrap()) {
+						order+=1;
+						int curord = order;
+						getleveljson(item.asString().unwrap(), [=](matjson::Value response) {
+							level_map[curord] = response;
+						});
+					}
+			},[=]() {
+                FLAlertLayer::create("Server Error","The server is unable to be reached!","OK")->show();
+            });
+        } else {if (BrType::LevelID.size() < 1 && !level_map.empty()) {
+            BrType::parseRequestString(level_map);
+        }
+        }
+
+        this->m_countText->setString((fmt::format("Showing levels {}-{}{} out of {}",clamp((this->m_fields->m_currentPage) * 10+1,0,BrType::LevelID.size()),clamp((this->m_fields->m_currentPage+1) * 10, 0,BrType::LevelID.size() ),islegacy ,BrType::LevelID.size() ).c_str()));
         this->m_pageText->setString(fmt::format("{}",this->m_fields->m_currentPage+1).c_str());
     }
-    #ifndef GEODE_IS_MACOS
-        void updatePageLabel() {
+    void updatePageLabel() {
             LevelBrowserLayer::updatePageLabel();
             if (!this->m_fields->isBrainrot) {
                 return;
@@ -223,6 +253,5 @@ class $modify(BRlist, LevelBrowserLayer) {
                 this->m_pageBtn->setVisible(true);
             }
         }
-    #endif
 };
 

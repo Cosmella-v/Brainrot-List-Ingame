@@ -7,21 +7,21 @@ using namespace geode::prelude;
 
 class BrType {
     public:
-        inline static std::vector<std::pair<int, int>> LevelID;
+        inline static std::vector<std::tuple<int, int,matjson::Value>> LevelID;
         inline static bool LoadedAllLevels = false;
         inline static int filterType;
         inline static bool isSearchingBR;
-        static int find(int id) {
+       static std::optional<std::tuple<int, int, matjson::Value>> find(int id) {
             auto it = std::find_if(LevelID.begin(), LevelID.end(),
-                [id](const std::pair<int, int>& pair) {
-                    return pair.second == id;
-                });
+            [id](const std::tuple<int, int, matjson::Value>& tuple) {
+                return std::get<1>(tuple) == id; // Compare the second element
+            });
 
             if (it != LevelID.end()) {
-                return it->first; 
+                return *it; 
             }
 
-            return -1;
+            return std::nullopt;
         }
 
 
@@ -33,12 +33,12 @@ class BrType {
                     if (ids < 0) {
                         ids*=-1;
                     }
-                    LevelID.emplace_back(key, ids);
+                    LevelID.emplace_back(key, ids,value);
                 }
             }
             std::sort(LevelID.begin(), LevelID.end(), 
-                    [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
-                        return a.first < b.first;
+                    [](const std::tuple<int, int, matjson::Value>& a, const std::tuple<int, int, matjson::Value>& b) {
+                        return std::get<0>(a) < std::get<0>(b);
                     });
             LoadedAllLevels = true;
         }
@@ -54,14 +54,14 @@ class BrType {
                             download << ",";
                         }
                         if (i < BrType::LevelID.size()) { 
-                            download << std::to_string(BrType::LevelID.at(i).second);
+                            download << std::to_string(std::get<1>(BrType::LevelID.at(i)));
                             first = false;
                         } 
                     }
                 }
             } else {
                 if (!BrType::LevelID.empty()) {
-                    download << std::to_string(BrType::LevelID.at(0).second);
+                    download << std::to_string(std::get<1>(BrType::LevelID.at(0)));
                 }
             }
             download << "&gameVersion=22";

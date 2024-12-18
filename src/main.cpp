@@ -14,10 +14,23 @@ class $modify(HookSearch, LevelSearchLayer) {
 		CCNode* Filter;
 		Filter = this->getChildByID("other-filter-menu");
 		if (!Filter) {
-		  Filter = this->getChildByType<CCMenu>(0);
-		  if (!Filter) {
-			return true;
-		  }
+			 if (!Loader::get()->isModLoaded("geode.node-ids")) {
+				 Filter = this->getChildByType<CCMenu>(0);
+				if (!Filter) {
+					return true;
+				}
+				// bug fix
+				auto winSize = CCDirector::get()->getWinSize();
+				Filter->setLayout(
+					ColumnLayout::create()
+						->setAxisReverse(true)
+						->setGap(10)
+						->setAxisAlignment(AxisAlignment::End)
+				);
+				Filter->setAnchorPoint({1, 0.5f});
+				Filter->setPosition({winSize.width - 5, Filter->getPositionY()});
+				Filter->setContentSize({Filter->getContentSize().width, winSize.height-10});
+			 } else {return true;}
 		}
 		auto BRL_Button = CCMenuItemSpriteExtra::create(
 			 CircleButtonSprite::createWithSprite(
@@ -29,7 +42,7 @@ class $modify(HookSearch, LevelSearchLayer) {
 			this,
 			menu_selector(HookSearch::pushbtncustom)
 		);
-		BRL_Button->setID("BLR/Button"_spr);
+		BRL_Button->setID("BRL/Button"_spr);
 		Filter->addChild(BRL_Button);
 		Filter->updateLayout();
 		return true;
@@ -51,7 +64,7 @@ class $modify(MenuLayer) {
 							level_map[curord] = response;
 						});
 					}
-			});
+			},nullptr);
 		}
         return MenuLayer::init();
     }

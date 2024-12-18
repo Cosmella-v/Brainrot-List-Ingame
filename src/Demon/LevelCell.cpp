@@ -28,23 +28,38 @@ class $modify(LevelCell) {
 			Boo->setVisible(false);
 			typeinfo_cast<CCSprite*>(Boo)->setOpacity(0);
 		}
-
-		auto difficultyNode = m_mainLayer->getChildByID("difficulty-container");
-		if (!difficultyNode) {
-			return;
-		};
-		CCNode* difficultySpr = difficultyNode->getChildByID("difficulty-sprite");
+		CCNode* difficultyNode;
+		if (Loader::get()->isModLoaded("geode.node-ids")) {
+			difficultyNode = m_mainLayer->getChildByID("difficulty-container");
+			if (!difficultyNode) {
+				return;
+			};
+		}
+		CCNode* difficultySpr;
+		if (!Loader::get()->isModLoaded("geode.node-ids")) {
+			difficultyNode = nullptr;
+			for (auto item :  CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
+				if (GJDifficultySprite* spr = item->getChildByType<GJDifficultySprite>(0)) {
+					difficultySpr = spr;
+					difficultyNode = difficultySpr->getParent(); // great way without node ids
+					break;
+				}
+			};
+		} else {difficultySpr = difficultyNode->getChildByID("difficulty-sprite");}
 		if (!difficultySpr) {
 			return;
 		}
+
 		cocos2d::CCPoint difficultyPos = difficultySpr->getPosition() + CCPoint { .0f, .0f };
 		if (difficultyNode) {
-			int demonpos = BrType::find(p0->m_levelID);
-			if (demonpos != -1) {
-                CCSprite* mdSpr = CCSprite::create("Difficulty_Brl.png"_spr);
+			auto demonpos = BrType::find(p0->m_levelID);
+			if (demonpos) {
+                CCSprite* mdSpr = CCSprite::create("normal_face_with_demon_text.png"_spr);
 				mdSpr->setPosition(difficultyPos);
 				if (mdSpr->getParent() != difficultyNode) difficultyNode->addChild(mdSpr);
 				mdSpr->setZOrder(difficultySpr->getZOrder());
+				mdSpr->setScale(0.2);
+				mdSpr->setAnchorPoint({0.5,0.350});
 				typeinfo_cast<CCSprite*>(difficultySpr)->setOpacity(0);
 				mdSpr->setID("BRL"_spr);
 			}

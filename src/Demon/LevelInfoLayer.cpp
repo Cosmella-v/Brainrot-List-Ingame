@@ -23,14 +23,15 @@ class $modify(LevelInfoLayer) {
 		}
 		cocos2d::CCPoint difficultyPos = m_difficultySprite->getPosition() + CCPoint { .0f, .0f };
 		int zOrder = m_difficultySprite->getZOrder();
-		int demonpos = BrType::find(p0->m_levelID);
-		if (demonpos != -1) {
-            CCSprite* mdSpr = CCSprite::create("list_icon.png"_spr);
+		auto demonpos = BrType::find(p0->m_levelID);
+		if (demonpos) {
+			log::debug("{}",std::get<2>(*demonpos).dump());
+
+            CCSprite* mdSpr = CCSprite::create("normal_face_with_demon_text.png"_spr);
 			mdSpr->setPosition(difficultyPos);
-            mdSpr->setScale(0.5);
-            mdSpr->setAnchorPoint({0.5,0.8});
 			if (mdSpr->getParent() != this) this->addChild(mdSpr);
 			mdSpr->setZOrder(zOrder);
+			mdSpr->setScale(0.2);
 			m_difficultySprite->setOpacity(0);
 			mdSpr->setID("BRL"_spr);
 		}
