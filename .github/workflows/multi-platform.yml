@@ -18,6 +18,9 @@ jobs:
         - name: macOS
           os: macos-latest
 
+        - name: Linux
+          os: ubuntu-latest
+
         - name: Android32
           os: ubuntu-latest
           target: Android32
@@ -31,6 +34,40 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up dependencies for Windows
+        if: matrix.config.name == 'Windows'
+        run: |
+          choco install visualstudio2019community
+          choco install cmake
+          choco install ninja
+          # Install WebView2 SDK
+          choco install microsoft-edge-webview2
+
+      - name: Set up dependencies for macOS
+        if: matrix.config.name == 'macOS'
+        run: |
+          brew install cmake
+          brew install ninja
+          # Install WebKit
+          brew install webkit2gtk
+
+      - name: Set up dependencies for Linux
+        if: matrix.config.name == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev libwebkit2gtk-4.0-dev
+
+      - name: Set up dependencies for Android
+        if: startsWith(matrix.config.name, 'Android')
+        run: |
+          sudo apt-get install -y openjdk-11-jdk
+          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+          unzip commandlinetools-linux-7583922_latest.zip -d cmdline-tools
+          mkdir -p $ANDROID_HOME/cmdline-tools/latest
+          mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30"
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
