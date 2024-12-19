@@ -23,9 +23,34 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
-# Scuffed fix?
-if (NOT EXISTS "${CMAKE_BINARY_DIR}/_deps/webview-build/core/webview.lib")
+# Function to check if webview.lib exists in the build folder or its subdirectories
+function(check_webview_lib_in_build)
+    set(WEBVIEW_LIB_NAME "webview.lib")
+
+    # Search within the build folder and its subdirectories
+    file(GLOB_RECURSE CANDIDATE_PATHS RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*/webview.lib")
+
+    if (CANDIDATE_PATHS)
+        foreach(PATH ${CANDIDATE_PATHS})
+            if (EXISTS "${CMAKE_BINARY_DIR}/${PATH}")
+                message(STATUS "Found ${WEBVIEW_LIB_NAME} at ${CMAKE_BINARY_DIR}/${PATH}")
+                set(WEBVIEW_FOUND TRUE PARENT_SCOPE)
+                set(WEBVIEW_LIB_PATH "${CMAKE_BINARY_DIR}/${PATH}" PARENT_SCOPE)
+                return()
+            endif()
+        endforeach()
+    endif()
+
+    set(WEBVIEW_FOUND FALSE PARENT_SCOPE)
+endfunction()
+
+# Check if webview.lib exists in the build directory
+check_webview_lib_in_build()
+
+# Proceed with adding WebView package if it was not found
+if (NOT WEBVIEW_FOUND)
     if (NOT TARGET webview::core)
+        message(STATUS "WebView library not found, adding WebView package...")
         CPMAddPackage(
             NAME webview
             GIT_REPOSITORY https://github.com/webview/webview
@@ -33,12 +58,12 @@ if (NOT EXISTS "${CMAKE_BINARY_DIR}/_deps/webview-build/core/webview.lib")
         )
         if (webview_ADDED)
             target_link_libraries(${PROJECT_NAME} webview::core)
-            message(STATUS "added webview package!")
+            message(STATUS "WebView package successfully added!")
         else()
             message(FATAL_ERROR "Failed to add WebView package!")
         endif()
     else()
-        message(STATUS "WebView already added, skipping.")
+        message(STATUS "WebView already added, skipping...")
     endif()
 else()
     message(STATUS "Found webview.lib, skipping WebView package addition.")
