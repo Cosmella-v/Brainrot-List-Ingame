@@ -32,9 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Clean Build Directory AKA FUCK IT
-        run: rm -rf build/
-
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
@@ -42,9 +39,6 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
-
-      - name: Debug Build Environment
-        run: cat build/CMakeCache.txt
 
   package:
     name: Package builds
