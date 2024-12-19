@@ -22,15 +22,15 @@ else()
 endif()
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
-
 # Add WebView library using FetchContent
+if (NOT ENV{FUCKYOUWEBVIEW})
+set(ENV{FUCKYOUWEBVIEW} true)
 include(FetchContent)
     FetchContent_Declare(
         webview
         GIT_REPOSITORY https://github.com/webview/webview
         GIT_TAG 0.12.0
     )
-if (NOT TARGET webview::core)
     FetchContent_MakeAvailable(webview)
 else()
     message(STATUS "------> I am already here <--------")
