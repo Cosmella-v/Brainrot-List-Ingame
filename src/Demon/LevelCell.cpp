@@ -23,11 +23,6 @@ class $modify(LevelCell) {
             BrType::parseRequestString(level_map);
         }
 		LevelCell::loadFromLevel(p0);
-		if (CCNode* Boo = this->getChildByIDRecursive("uproxide.more_difficulties/more-difficulties-spr")) {
-			Boo->setScale(0);
-			Boo->setVisible(false);
-			typeinfo_cast<CCSprite*>(Boo)->setOpacity(0);
-		}
 		CCNode* difficultyNode;
 		if (Loader::get()->isModLoaded("geode.node-ids")) {
 			difficultyNode = m_mainLayer->getChildByID("difficulty-container");
@@ -54,6 +49,11 @@ class $modify(LevelCell) {
 		if (difficultyNode) {
 			auto demonpos = BrType::find(p0->m_levelID);
 			if (demonpos) {
+				if (CCNode* Boo = this->getChildByIDRecursive("uproxide.more_difficulties/more-difficulties-spr")) {
+					Boo->setScale(0);
+					Boo->setVisible(false);
+					typeinfo_cast<CCSprite*>(Boo)->setOpacity(0);
+				}
                 CCSprite* mdSpr = CCSprite::create("normal_face_with_demon_text.png"_spr);
 				mdSpr->setPosition(difficultyPos);
 				if (mdSpr->getParent() != difficultyNode) difficultyNode->addChild(mdSpr);

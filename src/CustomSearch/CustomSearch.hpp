@@ -233,9 +233,8 @@ class $modify(BRlist, LevelBrowserLayer) {
 			},[=]() {
                 FLAlertLayer::create("Server Error","The server is unable to be reached!","OK")->show();
             });
-        } else {if (BrType::LevelID.size() < 1 && !level_map.empty()) {
+        } if (BrType::LevelID.size() < 1 && !level_map.empty()) {
             BrType::parseRequestString(level_map);
-        }
         }
 
         this->m_countText->setString((fmt::format("Showing levels {}-{}{} out of {}",clamp((this->m_fields->m_currentPage) * 10+1,0,BrType::LevelID.size()),clamp((this->m_fields->m_currentPage+1) * 10, 0,BrType::LevelID.size() ),islegacy ,BrType::LevelID.size() ).c_str()));

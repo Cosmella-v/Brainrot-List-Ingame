@@ -6,6 +6,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 project(BrainrotList VERSION 1.0.0)
 
+# Add source files for the project
 add_library(${PROJECT_NAME} SHARED
     src/main.cpp
     src/Demon/LevelCell.cpp
@@ -13,6 +14,7 @@ add_library(${PROJECT_NAME} SHARED
     # Add any extra C++ source files here
 )
 
+# Add Geode SDK
 if (NOT DEFINED ENV{GEODE_SDK})
     message(FATAL_ERROR "Unable to find Geode SDK! Please define GEODE_SDK environment variable to point to Geode")
 else()
@@ -21,4 +23,16 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
+# Add WebView library using FetchContent
+include(FetchContent)
+FetchContent_Declare(
+    webview
+    GIT_REPOSITORY https://github.com/webview/webview
+    GIT_TAG 0.12.0)
+FetchContent_MakeAvailable(webview)
+target_link_libraries(${PROJECT_NAME} webview::core)
+message(STATUS "added webview")
+
+
+# Setup Geode mod
 setup_geode_mod(${PROJECT_NAME})
