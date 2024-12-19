@@ -24,12 +24,12 @@ endif()
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 # Add WebView library using FetchContent
+if (NOT webview_POPULATED) 
 include(FetchContent)
 FetchContent_Declare(
     webview
     GIT_REPOSITORY https://github.com/webview/webview
     GIT_TAG 0.12.0)
-if (NOT webview_POPULATED) 
 FetchContent_MakeAvailable(webview)
 message(STATUS "added webview")
 target_link_libraries(${PROJECT_NAME} webview::core)
