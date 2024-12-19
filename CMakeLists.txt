@@ -29,9 +29,13 @@ FetchContent_Declare(
     webview
     GIT_REPOSITORY https://github.com/webview/webview
     GIT_TAG 0.12.0)
+if (NOT webview_POPULATED) 
 FetchContent_MakeAvailable(webview)
-target_link_libraries(${PROJECT_NAME} webview::core)
 message(STATUS "added webview")
+target_link_libraries(${PROJECT_NAME} webview::core)
+else()
+message(STATUS "------> I am already here <--------")
+endif()
 
 
 # Setup Geode mod

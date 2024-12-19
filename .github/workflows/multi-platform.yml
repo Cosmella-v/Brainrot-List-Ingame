@@ -14,11 +14,9 @@ jobs:
         config:
         - name: Windows
           os: windows-latest
-          target: Windows
 
         - name: macOS
           os: macos-latest
-          target: macOS
 
         - name: Android32
           os: ubuntu-latest
@@ -33,13 +31,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up MSVC (Windows only)
-        if: runner.os == 'Windows'
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          set CC=cl
-          set CXX=cl
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
