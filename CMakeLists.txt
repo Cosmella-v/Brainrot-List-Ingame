@@ -28,7 +28,7 @@ function(check_webview_lib_in_build)
     set(WEBVIEW_LIB_NAME "webview.lib")
 
     # Search within the build folder and its subdirectories
-    file(GLOB_RECURSE CANDIDATE_PATHS RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*/webview.lib")
+    file(GLOB_RECURSE CANDIDATE_PATHS RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*/webview-build")
 
     if (CANDIDATE_PATHS)
         foreach(PATH ${CANDIDATE_PATHS})
