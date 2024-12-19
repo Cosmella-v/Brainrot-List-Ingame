@@ -22,8 +22,9 @@ else()
 endif()
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
-if (NOT webview_ADDED)
-    # Add WebView library using CPMAddPackage
+
+# check the coreeeeeee
+if (NOT TARGET webview::core)
     CPMAddPackage(
         NAME webview
         GIT_REPOSITORY https://github.com/webview/webview
@@ -31,8 +32,14 @@ if (NOT webview_ADDED)
     )
     if (webview_ADDED)
         target_link_libraries(${PROJECT_NAME} webview::core)
+        message(STATUS "added webview package!, :3")
+    else()
+        message(FATAL_ERROR "Failed to add WebView package! FUCK YOU")
     endif()
+else()
+    message(STATUS "WebView already added, skipping. PLEASE FIX")
 endif()
-message(STATUS "added webview")
+
+
 # Setup Geode mod
 setup_geode_mod(${PROJECT_NAME})
