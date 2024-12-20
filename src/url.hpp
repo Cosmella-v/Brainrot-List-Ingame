@@ -9,6 +9,8 @@ using namespace geode::prelude;
 #include <webview/webview.h>
 #include <iostream>
 #include <string>
+
+#if defined(webview)
 #if defined(_WIN32)
 #include <windows.h>
 #elif defined(__APPLE__)
@@ -123,6 +125,17 @@ static void set_window_props(void* window) {
 }
 
 };
+#else
+class WebviewUrl {
+    public:
+    inline static std::string ConvertToEmbed(std::string url) {
+        return url;
+    }
+    inline static void Open(std::string url, std::string Name) {
+        geode::utils::web::openLinkInBrowser(url);
+    };
+};
+#endif;
 
 static std::map<int,matjson::Value> level_map;
 
