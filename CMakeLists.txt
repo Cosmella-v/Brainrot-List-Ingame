@@ -65,17 +65,6 @@ endfunction()
 check_for_existing_webview_target()
 
 if (NOT WEBVIEW_FOUND AND WEBVIEW_TARGET STREQUAL "none")
-    message(STATUS "No WebView library found, adding WebView package...")
-    CPMAddPackage(
-        NAME webview2
-        GIT_REPOSITORY https://github.com/Microsoft/WebView2
-        GIT_TAG main
-    )
-    
-    if (webview2_ADDED)
-        target_link_libraries(${PROJECT_NAME} microsoft_web_webview2)
-        message(STATUS "WebView2 package successfully added!")
-    else()
         CPMAddPackage(
             NAME webview
             GIT_REPOSITORY https://github.com/webview/webview
@@ -87,7 +76,6 @@ if (NOT WEBVIEW_FOUND AND WEBVIEW_TARGET STREQUAL "none")
         else()
             message(FATAL_ERROR "Failed to add WebView package!")
         endif()
-    endif()
 else()
     message(STATUS "WebView already added, skipping WebView package addition.")
 endif()
