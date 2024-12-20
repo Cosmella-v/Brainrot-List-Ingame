@@ -6,11 +6,11 @@
 #include <Geode/utils/web.hpp>
 #include <Geode/loader/Event.hpp>
 using namespace geode::prelude;
-#include <webview/webview.h>
 #include <iostream>
 #include <string>
 
 #if defined(webview)
+#include <webview/webview.h>
 #if defined(_WIN32)
 #include <windows.h>
 #elif defined(__APPLE__)
