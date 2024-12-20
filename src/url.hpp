@@ -40,9 +40,7 @@ class WebviewUrl {
             std::string videoId = url.substr(32);  
             return "https://www.youtube.com/embed/" + videoId;
         }
-        else {
-            return url;
-        }
+        return url;
     }
     inline static void Open(std::string url, std::string Name) {
         try {
