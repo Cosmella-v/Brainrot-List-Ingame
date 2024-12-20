@@ -6,11 +6,13 @@
 #include "BrType.hpp"
 #include <fmt/core.h>
 #include <fmt/format.h>
+#include <Geode/modify/GJSearchObject.hpp>
 #include <fmt/chrono.h>
 #include <sstream>
 #include <time.h>
 #include <chrono>
-
+#include "Packlist.hpp"
+#include <Geode/modify/MapPackCell.hpp>
 #ifndef GEODE_IS_ANDROID
 #include <sys/timeb.h>
 #endif
@@ -18,6 +20,27 @@ double timeBD = 0;
 double m_stopratelimit = 0;
 
 using namespace std::chrono;
+class $modify(FixMapPackCell, MapPackCell) {
+    struct Fields {
+        bool m_moddedcellforBrl = false;
+    };
+    void loadFromMapPack(GJMapPack* cell) {
+        MapPackCell::loadFromMapPack(cell);
+        if (cell->getUserObject("brl_modified")) {
+            this->m_fields->m_moddedcellforBrl = true;
+            this->m_viewButton->m_pfnSelector = (cocos2d::SEL_MenuHandler)(&FixMapPackCell::Better_onClick);
+        }
+        return;
+    };
+
+    void Better_onClick(CCObject*) {
+        log::debug("Should load new scene");
+        BrType::ShouldChangeText = this->m_mapPack->m_packName;
+        auto browserLayer = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Type19, this->m_mapPack->m_levelStrings));
+        CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
+    }
+
+};
 
 using namespace geode::prelude;
 static void change_scene() {
@@ -26,7 +49,8 @@ static void change_scene() {
             BrType::filterType = -1;
         }
         BrType::isSearchingBR = true;
-        auto browserLayer = LevelBrowserLayer::scene(BrType::getSearchObject(10, 0));
+        //BrType::MapPack_Br = true;
+        auto browserLayer = LevelBrowserLayer::scene(BrType::getSearchObject(10, 0,false));
         CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
 }
 
@@ -52,14 +76,27 @@ class $modify(BRlist, LevelBrowserLayer) {
         int m_furthestLoadedPage = 0;
         int m_lowIdx = 0;
         bool isBrainrot = false;
+        bool MapPack_Br = false;
+        gd::string mapPackText;
     };
     bool init(GJSearchObject* p0) {
         this->m_fields->isBrainrot = BrType::isSearchingBR;
+        this->m_fields->mapPackText = BrType::ShouldChangeText;
+        this->m_fields->MapPack_Br = BrType::MapPack_Br;
+        BrType::MapPack_Br = false;
+        BrType::ShouldChangeText = "";
+        if (this->m_fields->MapPack_Br) {
+            bool inits = LevelBrowserLayer::init(BrType::getSearchObject(10, 0, this->m_fields->MapPack_Br));
+            updText();
+            return inits;
+        }
         if (!this->m_fields->isBrainrot) {
-            return LevelBrowserLayer::init(p0);
+            bool inits = LevelBrowserLayer::init(p0);
+            updText();
+            return inits;
         }
 
-        if (p0->m_searchType != SearchType::Type19) {
+        if (p0->m_searchType != SearchType::Type19 && p0->m_searchType != SearchType::MapPack) {
             return LevelBrowserLayer::init(p0);
         }
         BrType::isSearchingBR = false;
@@ -68,17 +105,35 @@ class $modify(BRlist, LevelBrowserLayer) {
         int page = this->m_fields->m_currentPage;
         this->m_fields->m_lowIdx = page * 10;
         this->setUserObject("brl_modified", CCBool::create(true));
-        LevelBrowserLayer::init(BrType::getSearchObject(10, 0));
+        LevelBrowserLayer::init(BrType::getSearchObject(10, 0, this->m_fields->MapPack_Br));
         hideStuff();
         return true;
     }
-
+    void updText() {
+        if (!this->m_fields->mapPackText.empty()) {
+                if (CCNode* CFix = this->m_list) {
+                    if (!Loader::get()->isModLoaded("geode.node-ids")) {
+                        if (CCLabelBMFont* TextLab = CFix->getChildByType<CCLabelBMFont>(0)) {
+                            TextLab->setString(this->m_fields->mapPackText.c_str());
+                        };
+                    } else {
+                        if (CCNode* TextLab = CFix->getChildByID("title")) {
+                            typeinfo_cast<CCLabelBMFont*>(TextLab)->setString(this->m_fields->mapPackText.c_str());
+                        };
+                    }
+                }
+        }
+    }
     void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1, int p2) {
+        if (this->m_fields->MapPack_Br && this->m_searchObject->m_searchType == SearchType::MapPack) {
+            p0 = BRPacks::GetPacks();
+        } 
         LevelBrowserLayer::loadLevelsFinished(p0, p1, p2);
+        updText();
         if (!this->m_fields->isBrainrot) {
             return;
         }
-        if (this->m_searchObject->m_searchType != SearchType::Type19) {
+        if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType  != SearchType::MapPack) {
             return;
         }
         auto prevBtn = this->m_leftArrow;
@@ -113,6 +168,7 @@ class $modify(BRlist, LevelBrowserLayer) {
     }
 
     void onNextPage(CCObject* sender) {
+        updText();
         if (!this->m_fields->isBrainrot) {
             return LevelBrowserLayer::onNextPage(sender);
         }
@@ -130,7 +186,7 @@ class $modify(BRlist, LevelBrowserLayer) {
         if (!this->m_fields->isBrainrot) {
             return LevelBrowserLayer::setIDPopupClosed(popup,p1);
         }
-        if (this->m_searchObject->m_searchType != SearchType::Type19) {
+        if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType != SearchType::MapPack) {
             return LevelBrowserLayer::setIDPopupClosed(popup,p1);
         }
         p1-=1;
@@ -148,7 +204,7 @@ class $modify(BRlist, LevelBrowserLayer) {
         if (!this->m_fields->isBrainrot) {
             return LevelBrowserLayer::onGoToPage(sender);
         }
-        if (this->m_searchObject->m_searchType != SearchType::Type19) {
+        if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType  != SearchType::MapPack) {
             return LevelBrowserLayer::onGoToPage(sender);
         }
         SetIDPopup* popup = SetIDPopup::create(this->m_fields->m_currentPage+1,1,(BrType::LevelID.size() / 10)+1,"Go to Page","OK",true,1,60,false,false);
@@ -157,10 +213,11 @@ class $modify(BRlist, LevelBrowserLayer) {
     }
 
     void onPrevPage(CCObject* sender) {
+        updText();
         if (!this->m_fields->isBrainrot) {
             return LevelBrowserLayer::onPrevPage(sender);
         }
-        if (this->m_searchObject->m_searchType != SearchType::Type19) {
+        if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType  != SearchType::MapPack) {
             return LevelBrowserLayer::onPrevPage(sender);
         }
         if (this->m_fields->m_currentPage > 0) {
@@ -169,9 +226,14 @@ class $modify(BRlist, LevelBrowserLayer) {
         nextBtnActions();
         
     }
+    void loadPage(GJSearchObject* type) {
+        LevelBrowserLayer::loadPage(type);
+        updText();
+        return;
+    }
     void fixtimeout(auto h) {
         m_stopratelimit = getFullDoubleTime() + timeBD;
-        LevelBrowserLayer::loadPage(BrType::getSearchObject( ((BrType::LevelID.size() - 10 - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1, (((BrType::LevelID.size()) - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1 ));
+        BRlist::loadPage(BrType::getSearchObject( ((BrType::LevelID.size() - 10 - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1, (((BrType::LevelID.size()) - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1,this->m_fields->MapPack_Br ));
         this->m_pageBtn->setVisible(true);
         if (CCNode* first_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/first-button")) {
             first_Betterinfo->setVisible(this->m_fields->m_currentPage != 0);
@@ -242,10 +304,11 @@ class $modify(BRlist, LevelBrowserLayer) {
     }
     void updatePageLabel() {
             LevelBrowserLayer::updatePageLabel();
+            updText();
             if (!this->m_fields->isBrainrot) {
                 return;
             }
-            if (this->m_searchObject->m_searchType != SearchType::Type19) {
+            if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType  != SearchType::MapPack) {
                 return;
             }
             if (this->m_pageBtn) {

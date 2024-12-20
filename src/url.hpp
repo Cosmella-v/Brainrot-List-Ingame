@@ -20,9 +20,6 @@ using namespace geode::prelude;
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #endif
-
-
-
 class WebviewUrl {
     public:
     inline static std::string ConvertToEmbed(std::string url) {

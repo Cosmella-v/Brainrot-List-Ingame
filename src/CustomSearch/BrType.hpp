@@ -11,6 +11,8 @@ class BrType {
         inline static bool LoadedAllLevels = false;
         inline static int filterType;
         inline static bool isSearchingBR;
+        inline static bool MapPack_Br = false;
+        inline static gd::string ShouldChangeText;
        static std::optional<std::tuple<int, int, matjson::Value>> find(int id) {
             auto it = std::find_if(LevelID.begin(), LevelID.end(),
             [id](const std::tuple<int, int, matjson::Value>& tuple) {
@@ -43,8 +45,12 @@ class BrType {
             LoadedAllLevels = true;
         }
 
-        inline static GJSearchObject* getSearchObject(int upper, int lower) {
+        inline static GJSearchObject* getSearchObject(int upper, int lower, bool map_Pack) {
             std::stringstream download;
+            if (map_Pack) {
+                download << "MapPack"_spr;
+                return GJSearchObject::create(SearchType::MapPack, download.str());
+            }
             bool first = true;
             // log::debug("Dowload Upper: {}, Download Lower {}", upper,lower );
             if (!(upper == 0 && lower == 0)) {
