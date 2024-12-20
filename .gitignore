@@ -44,6 +44,9 @@
 # Ignore platform specific build folders
 build-*/
 
+# Build artifacts
+/build
+
 # Workspace files are user-specific
 *.sublime-workspace
 

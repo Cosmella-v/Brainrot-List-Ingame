@@ -111,71 +111,14 @@ class WebviewUrl {
     private:
 static void set_window_props(void* window) {
     #if defined(_WIN32)
-    HWND hwnd = static_cast<HWND>(window);
-    if (hwnd != NULL) {
-        LONG style = GetWindowLong(hwnd, GWL_STYLE);
-        style |= WS_POPUP | WS_VISIBLE | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION; // Include system menu and close button
-        style &= ~(WS_THICKFRAME | WS_MAXIMIZEBOX); // Remove resizable border and maximize button
-        SetWindowLong(hwnd, GWL_STYLE, style);
-        SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED);
-    }
-    #elif defined(__APPLE__) && !defined(TARGET_OS_IPHONE)
-    id nsWindow = static_cast<id>(window);
-    objc_msgSend(nsWindow, sel_registerName("setLevel:"), kCGFloatingWindowLevelKey);
-    NSUInteger styleMask = ((NSUInteger (*)(id, SEL))objc_msgSend)(nsWindow, sel_registerName("styleMask"));
-    styleMask |= NSWindowStyleMaskClosable;
-    styleMask &= ~(NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable);
-    objc_msgSend(nsWindow, sel_registerName("setStyleMask:"), styleMask);
-    CGRect screenRect = CGDisplayBounds(CGMainDisplayID());
-    ((void (*)(id, SEL, CGRect))(objc_msgSend))(nsWindow, sel_registerName("setFrame:"), screenRect);
-    #elif defined(TARGET_OS_IPHONE)
-    UIWindow* uiWindow = static_cast<UIWindow*>(window);
-    uiWindow.windowLevel = UIWindowLevelAlert;
-    uiWindow.rootViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    CGRect screenRect = UIScreen.mainScreen.bounds;
-    uiWindow.frame = screenRect;
-    #elif defined(__linux__) && !defined(__ANDROID__)
-    Display* display = XOpenDisplay(NULL);
-    Window xWindow = static_cast<Window>(window);
-    if (display != NULL && xWindow != 0) {
-        XEvent xev;
-        Atom wmState = XInternAtom(display, "_NET_WM_STATE", False);
-        Atom wmStateAbove = XInternAtom(display, "_NET_WM_STATE_ABOVE", False);
-        memset(&xev, 0, sizeof(xev));
-        xev.type = ClientMessage;
-        xev.xclient.window = xWindow;
-        xev.xclient.message_type = wmState;
-        xev.xclient.format = 32;
-        xev.xclient.data.l[0] = 1;
-        xev.xclient.data.l[1] = wmStateAbove;
-        XSendEvent(display, DefaultRootWindow(display), False, SubstructureNotifyMask, &xev);
-        XSetWindowAttributes attrs;
-        attrs.override_redirect = False;
-        XChangeWindowAttributes(display, xWindow, CWOverrideRedirect, &attrs);
-        Screen* screen = DefaultScreenOfDisplay(display);
-        int screenWidth = screen->width;
-        int screenHeight = screen->height;
-        XMoveResizeWindow(display, xWindow, 0, 0, screenWidth, screenHeight);
-        Atom wmDelete = XInternAtom(display, "WM_DELETE_WINDOW", True);
-        XSetWMProtocols(display, xWindow, &wmDelete, 1);
-    }
-    #elif defined(__ANDROID__)
-    JNIEnv* env = nullptr;
-    jobject activity = (jobject)window;
-    jclass activityClass = env->GetObjectClass(activity);
-    jmethodID getWindowMethod = env->GetMethodID(activityClass, "getWindow", "()Landroid/view/Window;");
-    jobject windowObj = env->CallObjectMethod(activity, getWindowMethod);
-    jclass windowClass = env->GetObjectClass(windowObj);
-    jmethodID addFlagsMethod = env->GetMethodID(windowClass, "addFlags", "(I)V");
-    env->CallVoidMethod(windowObj, addFlagsMethod, 0x00000200); // FLAG_FULLSCREEN
-    jmethodID setFlagsMethod = env->GetMethodID(windowClass, "setFlags", "(II)V");
-    env->CallVoidMethod(windowObj, setFlagsMethod, 0x00080000, 0x00080000); // FLAG_LAYOUT_NO_LIMITS
-    jmethodID clearFlagsMethod = env->GetMethodID(windowClass, "clearFlags", "(I)V");
-    env->CallVoidMethod(windowObj, clearFlagsMethod, 0x00000400); // FLAG_FORCE_NOT_FULLSCREEN
-    jclass layoutParamsClass = env->FindClass("android/view/WindowManager$LayoutParams");
-    jfieldID fullScreenField = env->GetStaticFieldID(layoutParamsClass, "FLAG_FULLSCREEN", "I");
-    jint fullScreenFlag = env->GetStaticIntField(layoutParamsClass, fullScreenField);
-    env->CallVoidMethod(windowObj, addFlagsMethod, fullScreenFlag);
+        HWND hwnd = static_cast<HWND>(window);
+        if (hwnd != NULL) {
+            LONG style = GetWindowLong(hwnd, GWL_STYLE);
+            style |= WS_POPUP | WS_VISIBLE | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION; // Include system menu and close button
+            style &= ~(WS_THICKFRAME | WS_MAXIMIZEBOX); // Remove resizable border and maximize button
+            SetWindowLong(hwnd, GWL_STYLE, style);
+            SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED);
+        }
     #endif
 }
 
