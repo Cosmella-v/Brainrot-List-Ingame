@@ -40,11 +40,12 @@ if (NOT TARGET webview::core)
     endif()
 endif()
 
-if (TARGET webview::core)
-    target_link_libraries(${PROJECT_NAME} webview::core)
-else()
-    message(FATAL_ERROR "WebView core target not found!")
+if (NOT TARGET_LINKED_TO_${PROJECT_NAME}_webview)
+ set(TARGET_LINKED_TO_${PROJECT_NAME}_webview TRUE)
+ target_link_libraries(${PROJECT_NAME} webview::core)
+ message(STATUS "Webview var set")
 endif()
+
 
 # Setup Geode mod
 setup_geode_mod(${PROJECT_NAME})
