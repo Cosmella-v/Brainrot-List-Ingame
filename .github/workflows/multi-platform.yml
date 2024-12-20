@@ -31,8 +31,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
-      - if: runner.os == 'Linux'
+
+    - if: runner.os == 'Linux'
       name: Get APT packages for WebKitGTK
       id: apt-webkitgtk
       run: |
@@ -46,6 +46,7 @@ jobs:
         fi
         echo "packages=${packages[@]}" >> "${GITHUB_OUTPUT}"
       shell: bash
+
     - if: runner.os == 'Linux'
       name: Install packages (APT)
       run: |
