@@ -31,16 +31,55 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      
+      - if: runner.os == 'Linux'
+      name: Get APT packages for WebKitGTK
+      id: apt-webkitgtk
+      run: |
+        packages=()
+        if [[ "${{ inputs.webkitgtk-api }}" == "6.0" ]]; then
+          packages+=(libgtk-4-dev libwebkitgtk-6.0-dev)
+        elif [[ "${{ inputs.webkitgtk-api }}" == "4.1" ]]; then
+          packages+=(libgtk-3-dev libwebkit2gtk-4.1-dev)
+        elif [[ "${{ inputs.webkitgtk-api }}" == "4.0" ]]; then
+          packages+=(libgtk-3-dev libwebkit2gtk-4.0-dev)
+        fi
+        echo "packages=${packages[@]}" >> "${GITHUB_OUTPUT}"
+      shell: bash
+    - if: runner.os == 'Linux'
+      name: Install packages (APT)
+      run: |
+        packages=(${{ inputs.apt }} ${{ steps.apt-webkitgtk.outputs.packages }})
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends -y \
+          cmake \
+          doxygen \
+          graphviz \
+          ninja-build \
+          python3 \
+          python3-lxml \
+          python3-markupsafe \
+          python3-pip \
+          xvfb \
+          "${packages[@]}"
+      shell: bash
 
-      - name: Cache CMake build artifacts
-        uses: actions/cache@v3
-        with:
-          path: |
-            build
-            _deps
-          key: build-cache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', '**/*.cpp', '**/*.h') }}
-          restore-keys: |
-            build-cache-${{ runner.os }}-
+    - if: runner.os == 'Windows' && inputs.msys != ''
+      name: Set up MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ inputs.msys }}
+        update: false
+        install: base-devel
+        pacboy: >-
+          cmake:p
+          ninja:p
+          python:p
+          python-lxml:p
+          python-markupsafe:p
+          python-pip:p
+          toolchain:p
+          ${{ inputs.msys-pacboy }}
 
 
       - name: Build the mod
