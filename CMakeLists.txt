@@ -14,6 +14,18 @@ add_library(${PROJECT_NAME} SHARED
     # Add any extra C++ source files here
 )
 
+if (NOT TARGET_LINKED_TO_${PROJECT_NAME}_webview)
+ set(TARGET_LINKED_TO_${PROJECT_NAME}_webview TRUE)
+ include(FetchContent)
+ FetchContent_Declare(
+     webview
+     GIT_REPOSITORY https://github.com/webview/webview.git
+     GIT_TAG 0.12.0
+ )
+FetchContent_MakeAvailable(webview)
+target_include_directories(${PROJECT_NAME} PRIVATE webview)
+endif()
+
 # Add Geode SDK
 if (NOT DEFINED ENV{GEODE_SDK})
     message(FATAL_ERROR "Unable to find Geode SDK! Please define GEODE_SDK environment variable to point to Geode")
@@ -23,17 +35,6 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
-
-if (NOT TARGET_LINKED_TO_${PROJECT_NAME}_webview)
- set(TARGET_LINKED_TO_${PROJECT_NAME}_webview TRUE)
- include(FetchContent)
- FetchContent_Declare(
-     webview
-     GIT_REPOSITORY https://github.com/webview/webview.git
-     GIT_TAG 0.12.0
- )
- FetchContent_MakeAvailable(webview)
-endif()
 
 
 # Setup Geode mod
