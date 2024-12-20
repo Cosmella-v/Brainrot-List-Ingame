@@ -32,6 +32,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache CMake build artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            build
+            _deps
+          key: build-cache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', '**/*.cpp', '**/*.h') }}
+          restore-keys: |
+            build-cache-${{ runner.os }}-
+
+
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
