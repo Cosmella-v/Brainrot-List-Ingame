@@ -23,17 +23,23 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
+# Add WebView library using CPM
+if (EXISTS "${CMAKE_SOURCE_DIR}/webview")
+    CPMAddPackage(
+        NAME webview
+        SOURCE_DIR "${CMAKE_SOURCE_DIR}/webview"
+    )
+else()
+    CPMAddPackage(
+        NAME webview
+        GIT_REPOSITORY https://github.com/webview/webview
+        GIT_TAG 0.12.0
+    )
+    message(STATUS "Added from github")
+endif()
 
-CPMAddPackage(
-    NAME webview
-    GIT_REPOSITORY https://github.com/webview/webview
-    GIT_TAG 0.12.0
-)
-message(STATUS "Added from github")
-if (NOT DEFINED ENV{GITHUB_ACTIONS})
 # Link WebView library
 target_link_libraries(${PROJECT_NAME} webview::core)
-endif()
 
 # Setup Geode mod
 setup_geode_mod(${PROJECT_NAME})
