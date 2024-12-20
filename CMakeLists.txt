@@ -28,7 +28,7 @@ function(check_webview_lib_in_build)
     set(WEBVIEW_LIB_NAME "webview.lib")
 
     # Search within the build folder and its subdirectories
-    file(GLOB_RECURSE CANDIDATE_PATHS RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*/webview-build")
+    file(GLOB_RECURSE CANDIDATE_PATHS RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*/webview.lib")
 
     if (CANDIDATE_PATHS)
         foreach(PATH ${CANDIDATE_PATHS})
@@ -47,26 +47,49 @@ endfunction()
 # Check if webview.lib exists in the build directory
 check_webview_lib_in_build()
 
-# Proceed with adding WebView package if it was not found
-if (NOT WEBVIEW_FOUND)
-    if (NOT TARGET webview::core)
-        message(STATUS "WebView library not found, adding WebView package...")
+# Function to check for existing WebView targets
+function(check_for_existing_webview_target)
+    if (TARGET microsoft_web_webview)
+        set(WEBVIEW_TARGET "microsoft_web_webview" PARENT_SCOPE)
+        message(STATUS "Found target 'microsoft_web_webview'")
+    elseif (TARGET microsoft_web_webview2)
+        set(WEBVIEW_TARGET "microsoft_web_webview2" PARENT_SCOPE)
+        message(STATUS "Found target 'microsoft_web_webview2'")
+    else()
+        set(WEBVIEW_TARGET "none" PARENT_SCOPE)
+        message(STATUS "No WebView targets found")
+    endif()
+endfunction()
+
+
+check_for_existing_webview_target()
+
+if (NOT WEBVIEW_FOUND AND WEBVIEW_TARGET STREQUAL "none")
+    message(STATUS "No WebView library found, adding WebView package...")
+    CPMAddPackage(
+        NAME webview2
+        GIT_REPOSITORY https://github.com/Microsoft/WebView2
+        GIT_TAG main
+    )
+    
+    if (webview2_ADDED)
+        target_link_libraries(${PROJECT_NAME} microsoft_web_webview2)
+        message(STATUS "WebView2 package successfully added!")
+    else()
         CPMAddPackage(
             NAME webview
             GIT_REPOSITORY https://github.com/webview/webview
             GIT_TAG 0.12.0
         )
         if (webview_ADDED)
-            target_link_libraries(${PROJECT_NAME} webview::core)
+            target_link_libraries(${PROJECT_NAME} microsoft_web_webview)
             message(STATUS "WebView package successfully added!")
         else()
             message(FATAL_ERROR "Failed to add WebView package!")
         endif()
-    else()
-        message(STATUS "WebView already added, skipping...")
     endif()
 else()
-    message(STATUS "Found webview.lib, skipping WebView package addition.")
+    message(STATUS "WebView already added, skipping WebView package addition.")
 endif()
 
 # Setup Geode mod
