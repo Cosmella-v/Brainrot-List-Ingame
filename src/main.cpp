@@ -21,16 +21,18 @@ class $modify(HookSearch, LevelSearchLayer) {
 					return true;
 				}
 				// bug fix
-				auto winSize = CCDirector::get()->getWinSize();
-				Filter->setLayout(
-					ColumnLayout::create()
-						->setAxisReverse(true)
-						->setGap(10)
-						->setAxisAlignment(AxisAlignment::End)
-				);
-				Filter->setAnchorPoint({1, 0.5f});
-				Filter->setPosition({winSize.width - 5, Filter->getPositionY()});
-				Filter->setContentSize({Filter->getContentSize().width, winSize.height-10});
+				if (!Filter->getLayout()) {
+					auto winSize = CCDirector::get()->getWinSize();
+					Filter->setLayout(
+						ColumnLayout::create()
+							->setAxisReverse(true)
+							->setGap(10)
+							->setAxisAlignment(AxisAlignment::End)
+					);
+					Filter->setAnchorPoint({1, 0.5f});
+					Filter->setPosition({winSize.width - 5, Filter->getPositionY()});
+					Filter->setContentSize({Filter->getContentSize().width, winSize.height-10});
+				}
 			 } else {return true;}
 		}
 		auto BRL_Button = CCMenuItemSpriteExtra::create(
@@ -80,7 +82,7 @@ class $modify(MenuLayer) {
 						BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
 					}
 			},nullptr);
-		}
-        return MenuLayer::init();
     }
+	return MenuLayer::init();
+}
 };

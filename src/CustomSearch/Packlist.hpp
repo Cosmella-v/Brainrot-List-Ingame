@@ -11,6 +11,7 @@ public:
     inline static std::map<int,matjson::Value> levelid_map;
     inline static std::vector<std::tuple<std::string,matjson::Value>> PacksIDs;
     inline static int maxcount = 0;
+    inline static int realmaxcount = 0;
     inline static cocos2d::CCArray* GetPacks(int page) {
     cocos2d::CCArray* Newarrow = new cocos2d::CCArray;
     int index = offset;
@@ -32,6 +33,7 @@ public:
 
     }
     BRPacks::maxcount = ceil(PacksIDs.size() / 10);
+    BRPacks::realmaxcount = PacksIDs.size();
     log::debug("{}",BRPacks::maxcount);
     return Newarrow;
     };
