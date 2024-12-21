@@ -58,11 +58,11 @@ class $modify(LevelCell) {
 					Boo->setVisible(false);
 					typeinfo_cast<CCSprite*>(Boo)->setOpacity(0);
 				}
-                CCSprite* mdSpr = CCSprite::create("normal_face_with_demon_text.png"_spr);
+                CCSprite* mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
 				mdSpr->setPosition(difficultyPos);
 				if (mdSpr->getParent() != difficultyNode) difficultyNode->addChild(mdSpr);
 				mdSpr->setZOrder(difficultySpr->getZOrder());
-				mdSpr->setScale(0.2);
+				mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
 				mdSpr->setAnchorPoint({0.5,0.350});
 				typeinfo_cast<CCSprite*>(difficultySpr)->setOpacity(0);
 				mdSpr->setID("BRL"_spr);

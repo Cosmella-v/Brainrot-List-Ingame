@@ -60,11 +60,11 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 				rightside->getParent()->addChild(btnee);
 			}
 			after:
-				CCSprite* mdSpr = CCSprite::create("normal_face_with_demon_text.png"_spr);
+				CCSprite* mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
 				mdSpr->setPosition(difficultyPos);
 				if (mdSpr->getParent() != this) this->addChild(mdSpr);
 				mdSpr->setZOrder(zOrder);
-				mdSpr->setScale(0.2);
+				mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
 				m_difficultySprite->setOpacity(0);
 				mdSpr->setID("BRL"_spr);
 		}

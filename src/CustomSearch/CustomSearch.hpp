@@ -19,6 +19,30 @@
 double timeBD = 0;
 double m_stopratelimit = 0;
 
+inline bool isSpriteFrameName(CCNode* node, const char* name) {
+    if (!node) return false;
+
+    auto cache = CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(name);
+    if (!cache) return false;
+
+    auto* texture = cache->getTexture();
+    auto rect = cache->getRect();
+
+    if (auto* spr = typeinfo_cast<CCSprite*>(node)) {
+        if (spr->getTexture() == texture && spr->getTextureRect() == rect) {
+            return true;
+        }
+    } else if (auto* btn = typeinfo_cast<CCMenuItemSprite*>(node)) {
+        auto* img = btn->getNormalImage();
+        if (auto* spr = typeinfo_cast<CCSprite*>(img)) {
+            if (spr->getTexture() == texture && spr->getTextureRect() == rect) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 using namespace std::chrono;
 class $modify(FixMapPackCell, MapPackCell) {
     static void onModify(auto& self) {
@@ -45,11 +69,11 @@ class $modify(FixMapPackCell, MapPackCell) {
                     }
                 }
                 CCNode* mdSpr;
-                if (mdSpr = this->getChildByID("BRL"_spr)) {} else {mdSpr = CCSprite::create("normal_face_with_demon_text.png"_spr);}
+                if (mdSpr = this->getChildByID("BRL"_spr)) {} else {mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);}
                 mdSpr->setPosition(difficultyPos);
                 if (mdSpr->getParent() != this) this->addChild(mdSpr);
                 mdSpr->setZOrder(spr->getZOrder());
-                mdSpr->setScale(0.2);
+                mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
                 mdSpr->setID("BRL"_spr);
             }
             }
@@ -124,7 +148,7 @@ class $modify(BRlist, LevelBrowserLayer) {
                 CircleButtonSprite::createWithSprite(
                     "list_icon.png"_spr,
                     1.1,
-                    CircleBaseColor::DarkPurple,
+                    (Mod::get()->getSettingValue<bool>("dark-mode")) ? CircleBaseColor::DarkPurple : CircleBaseColor::Green,
                     CircleBaseSize::Small
                 ),
                 this,
@@ -134,8 +158,8 @@ class $modify(BRlist, LevelBrowserLayer) {
             returns = CCMenuItemSpriteExtra::create(
                 CircleButtonSprite::createWithSprite(
                     "mapPack.png"_spr,
-                    0.8,
-                    CircleBaseColor::DarkPurple,
+                    0.95,
+                    (Mod::get()->getSettingValue<bool>("dark-mode")) ? CircleBaseColor::DarkPurple : CircleBaseColor::Green,
                     CircleBaseSize::Small
                 ),
                 this,
@@ -157,14 +181,9 @@ class $modify(BRlist, LevelBrowserLayer) {
 					);
 			Holder->setContentSize({Holder->getContentSize().width, winSize.height-10});
             Holder->setID("Extra"_spr);
-
+            Holder->setPosition({63,260});
             if (CCNode* Child = this->getChildByIDRecursive("back-menu")) {
                 Holder->setPosition(Child->getPosition() - ccp(0.f,Child->getContentHeight()));
-            } else {
-                Child = this->getChildByType<CCMenu>(0);
-                if (!Loader::get()->isModLoaded("geode.node-ids") && Child) {
-                     Holder->setPosition(Child->getPosition() - ccp(0.f,Child->getContentHeight()));
-                }
             }
             Holder->setAnchorPoint({1.3,0.950}); 
             this->addChild(Holder);

@@ -39,7 +39,7 @@ class $modify(HookSearch, LevelSearchLayer) {
 			 CircleButtonSprite::createWithSprite(
                 "list_icon.png"_spr,
                 1.1,
-                CircleBaseColor::DarkPurple,
+               (Mod::get()->getSettingValue<bool>("dark-mode")) ? CircleBaseColor::DarkPurple : CircleBaseColor::Green,
                 CircleBaseSize::Small
             ),
 			this,
