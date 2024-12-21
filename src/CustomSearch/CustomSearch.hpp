@@ -34,7 +34,7 @@ class $modify(FixMapPackCell, MapPackCell) {
     };
 
     void Better_onClick(CCObject*) {
-        log::debug("Should load new scene");
+        //log::debug("Should load new scene");
         BrType::ShouldChangeText = this->m_mapPack->m_packName;
         auto browserLayer = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Type19, this->m_mapPack->m_levelStrings));
         CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
@@ -48,8 +48,8 @@ static void change_scene() {
             BrType::parseRequestString(level_map);
             BrType::filterType = -1;
         }
-        BrType::isSearchingBR = true;
-        //BrType::MapPack_Br = true;
+        //BrType::isSearchingBR = true;
+        BrType::MapPack_Br = true;
         auto browserLayer = LevelBrowserLayer::scene(BrType::getSearchObject(10, 0,false));
         CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
 }
@@ -86,6 +86,9 @@ class $modify(BRlist, LevelBrowserLayer) {
         BrType::MapPack_Br = false;
         BrType::ShouldChangeText = "";
         if (this->m_fields->MapPack_Br) {
+            this->m_fields->m_currentPage = 0;
+            int page = this->m_fields->m_currentPage;
+            this->m_fields->m_lowIdx = page * 10;
             bool inits = LevelBrowserLayer::init(BrType::getSearchObject(10, 0, this->m_fields->MapPack_Br));
             updText();
             return inits;
@@ -126,11 +129,11 @@ class $modify(BRlist, LevelBrowserLayer) {
     }
     void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1, int p2) {
         if (this->m_fields->MapPack_Br && this->m_searchObject->m_searchType == SearchType::MapPack) {
-            p0 = BRPacks::GetPacks();
+            p0 = BRPacks::GetPacks(this->m_fields->m_currentPage * 10);
         } 
         LevelBrowserLayer::loadLevelsFinished(p0, p1, p2);
         updText();
-        if (!this->m_fields->isBrainrot) {
+        if (!this->m_fields->isBrainrot && !this->m_fields->MapPack_Br) {
             return;
         }
         if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType  != SearchType::MapPack) {
@@ -145,17 +148,31 @@ class $modify(BRlist, LevelBrowserLayer) {
         nextBtn->setVisible(true);
         this->m_pageBtn->setVisible(true);
 
+        int max = 0;
+        if (this->m_fields->MapPack_Br) {
+            max = BRPacks::maxcount;
+        } else {
+            max = (BrType::LevelID.size() / 10);
+        }
+
         if (this->m_fields->m_currentPage <= 0) {
             prevBtn->setVisible(false);
-        } else if (this->m_fields->m_currentPage >= (BrType::LevelID.size() / 10)) {
+        }
+        if (this->m_fields->m_currentPage >= max) {
             nextBtn->setVisible(false);
         }
     }
     void lastpage(auto h) {
-        if (this->m_fields->m_currentPage == (BrType::LevelID.size() / 10)) {
+        int max = 0;
+        if (this->m_fields->MapPack_Br) {
+            max = BRPacks::maxcount;
+        } else {
+            max = (BrType::LevelID.size() / 10);
+        }
+        if (this->m_fields->m_currentPage == max) {
             return;
         };
-        this->m_fields->m_currentPage = (BrType::LevelID.size() / 10);
+        this->m_fields->m_currentPage = max;
         nextBtnActions();
     }
 
@@ -169,31 +186,44 @@ class $modify(BRlist, LevelBrowserLayer) {
 
     void onNextPage(CCObject* sender) {
         updText();
-        if (!this->m_fields->isBrainrot) {
+        if (!this->m_fields->isBrainrot && !this->m_fields->MapPack_Br) {
             return LevelBrowserLayer::onNextPage(sender);
         }
-        if (this->m_searchObject->m_searchType != SearchType::Type19) {
+        if (this->m_searchObject->m_searchType != SearchType::Type19  && this->m_searchObject->m_searchType != SearchType::MapPack) {
             return LevelBrowserLayer::onNextPage(sender);
         }
-
-        if (this->m_fields->m_currentPage < (BrType::LevelID.size() / 10)) {
+        int max = 0;
+        if (this->m_fields->MapPack_Br) {
+            max = BRPacks::maxcount;
+        } else {
+            max = (BrType::LevelID.size() / 10);
+        }
+        if (this->m_fields->m_currentPage < max) {
             this->m_fields->m_currentPage += 1;
         }
         nextBtnActions();
         
     }
     void setIDPopupClosed(SetIDPopup* popup, int p1) {
-        if (!this->m_fields->isBrainrot) {
+        if (!this->m_fields->isBrainrot && !this->m_fields->MapPack_Br) {
             return LevelBrowserLayer::setIDPopupClosed(popup,p1);
         }
         if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType != SearchType::MapPack) {
             return LevelBrowserLayer::setIDPopupClosed(popup,p1);
         }
         p1-=1;
+
+        int max = 0;
+        if (this->m_fields->MapPack_Br) {
+            max = BRPacks::maxcount;
+        } else {
+            max = (BrType::LevelID.size() / 10);
+        }
+
         if (this->m_fields->m_currentPage == p1) {
             return;
         }
-        if (p1 >= (BrType::LevelID.size() / 10)) {
+        if (p1 >= max) {
            return lastpage(nullptr);
         };
         this->m_fields->m_currentPage = p1;
@@ -201,20 +231,28 @@ class $modify(BRlist, LevelBrowserLayer) {
         nextBtnActions();
     }
     void onGoToPage(CCObject* sender) {
-        if (!this->m_fields->isBrainrot) {
+        if (!this->m_fields->isBrainrot && !this->m_fields->MapPack_Br) {
             return LevelBrowserLayer::onGoToPage(sender);
         }
         if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType  != SearchType::MapPack) {
             return LevelBrowserLayer::onGoToPage(sender);
         }
-        SetIDPopup* popup = SetIDPopup::create(this->m_fields->m_currentPage+1,1,(BrType::LevelID.size() / 10)+1,"Go to Page","OK",true,1,60,false,false);
+        int max = 0;
+        if (this->m_fields->MapPack_Br) {
+            max = BRPacks::maxcount;
+        } else {
+            max = (BrType::LevelID.size() / 10);
+        }
+
+        SetIDPopup* popup = SetIDPopup::create(this->m_fields->m_currentPage+1,1,(max)+1,"Go to Page","OK",true,1,60,false,false);
         popup->m_delegate = this;
         popup->show();
     }
 
     void onPrevPage(CCObject* sender) {
         updText();
-        if (!this->m_fields->isBrainrot) {
+        
+        if (!this->m_fields->isBrainrot && !this->m_fields->MapPack_Br) {
             return LevelBrowserLayer::onPrevPage(sender);
         }
         if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType  != SearchType::MapPack) {
@@ -272,9 +310,18 @@ class $modify(BRlist, LevelBrowserLayer) {
         prevBtn->setVisible(true);
         nextBtn->setVisible(true);
 
+
+         int max = 0;
+        if (this->m_fields->MapPack_Br) {
+            max = BRPacks::maxcount;
+        } else {
+            max = (BrType::LevelID.size() / 10);
+        }
+
         if (this->m_fields->m_currentPage <= 0) {
             prevBtn->setVisible(false);
-        } else if (this->m_fields->m_currentPage >= (BrType::LevelID.size() / 10)) {
+        } 
+        if (this->m_fields->m_currentPage >= max) {
             nextBtn->setVisible(false);
         }
         this->m_pageBtn->setVisible(true);

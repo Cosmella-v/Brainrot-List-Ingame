@@ -2,6 +2,7 @@
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include "../CustomSearch/BrType.hpp"
 #include "../url.hpp"
+#include "../CustomSearch/Packlist.hpp"
 using namespace geode::prelude;
 
 class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
@@ -27,6 +28,9 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 		cocos2d::CCPoint difficultyPos = m_difficultySprite->getPosition() + CCPoint { .0f, .0f };
 		int zOrder = m_difficultySprite->getZOrder();
 		auto demonpos = BrType::find(p0->m_levelID);
+		if (!demonpos) {
+			demonpos = BRPacks::find(p0->m_levelID);
+		}
 		if (demonpos) {
 			if (CCNode* Boo = this->getChildByIDRecursive("uproxide.more_difficulties/more-difficulties-spr")) {
 				Boo->setScale(0);

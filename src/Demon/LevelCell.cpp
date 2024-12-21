@@ -2,6 +2,7 @@
 #include <Geode/modify/LevelCell.hpp>
 #include "../CustomSearch/BrType.hpp"
 #include "../url.hpp"
+#include "../CustomSearch/Packlist.hpp"
 using namespace geode::prelude;
 /*
 #include <Geode/modify/SetIDPopup.hpp>
@@ -48,6 +49,9 @@ class $modify(LevelCell) {
 		cocos2d::CCPoint difficultyPos = difficultySpr->getPosition() + CCPoint { .0f, .0f };
 		if (difficultyNode) {
 			auto demonpos = BrType::find(p0->m_levelID);
+			if (!demonpos) {
+				demonpos = BRPacks::find(p0->m_levelID);
+			}
 			if (demonpos) {
 				if (CCNode* Boo = this->getChildByIDRecursive("uproxide.more_difficulties/more-difficulties-spr")) {
 					Boo->setScale(0);

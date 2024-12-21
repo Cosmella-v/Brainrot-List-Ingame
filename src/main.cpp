@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
 #include "url.hpp" 
+#include "CustomSearch/Packlist.hpp" 
 #include "CustomSearch/CustomSearch.hpp" 
 #include <Geode/modify/LevelSearchLayer.hpp>
 
@@ -63,6 +64,20 @@ class $modify(MenuLayer) {
 						getleveljson(item.asString().unwrap(), [=](matjson::Value response) {
 							level_map[curord] = response;
 						});
+					}
+			},nullptr);
+		}
+		if (BRPacks::PacksIDs.empty()) {
+				getpackjson([=](matjson::Value response) {
+					for (auto item : response.asArray().unwrap()) {
+						log::debug("{}", item.dump());
+						for (const auto& lels : item["levels"].asArray().unwrap()) {
+							getleveljson(lels.asString().unwrap(), [=](matjson::Value response) {
+								BRPacks::level_map[lels.asString().unwrap()] = response;
+								BRPacks::levelid_map[response["id"].asInt().unwrap()] = response;
+							});
+						}
+						BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
 					}
 			},nullptr);
 		}
