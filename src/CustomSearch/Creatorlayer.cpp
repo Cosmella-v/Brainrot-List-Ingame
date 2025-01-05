@@ -2,7 +2,6 @@
 #include <Geode/modify/CreatorLayer.hpp>
 
 using namespace geode::prelude;
-
 class $modify(HookCreator, CreatorLayer) {
 	static void onModify(auto& self) {
         (void)self.setHookPriority("CreatorLayer::init", INT_MIN/2-1); 
@@ -12,17 +11,17 @@ class $modify(HookCreator, CreatorLayer) {
         dialogLines->addObject(DialogObject::create(
 			"THE KEYMASTER",
 			"<d010>.<d010>.<d010>.",
-			1, 1.0f, false, ccWHITE
+			2, 1.0f, false, ccWHITE
 		));
         dialogLines->addObject(DialogObject::create(
 			"THE KEYMASTER",
 			"Did you really think you could play roulette?<d010><d010><d010>",
-			1, 1.0f, false, ccWHITE
+			17, 1.0f, false, ccWHITE
 		));
         dialogLines->addObject(DialogObject::create(
 			"THE KEYMASTER",
 			"Well scram it's not finished!",
-			1, 1.0f, false, ccWHITE
+			18, 1.0f, false, ccWHITE
 		));
         DialogLayer* dialog = DialogLayer::createWithObjects(dialogLines, 2);
 		dialog->updateChatPlacement(DialogChatPlacement::Center);

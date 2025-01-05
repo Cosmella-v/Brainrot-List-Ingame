@@ -1,3 +1,7 @@
+# 1.1.1
+- android bug fixes
+- some bug fix
+- roulette?
 # 1.1.0
 - Changed demon to a more fitting one
 - some changes on rate limit
