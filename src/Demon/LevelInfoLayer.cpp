@@ -10,6 +10,9 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
         (void)self.setHookPriority("LevelInfoLayer::init", INT_MIN/2-1); 
     }
 	void YoutubeLink(CCObject*) {
+		if (!this->m_fields->jsonSavedBRL.contains("verification") || !this->m_fields->jsonSavedBRL["verification"].isString()) {
+			return; // the field is wrong smh
+		};
 		std::string VideoLink = WebviewUrl::ConvertToEmbed(this->m_fields->jsonSavedBRL["verification"].asString().unwrapOr("f"));
 		if (VideoLink != "f") {
 			WebviewUrl::Open(VideoLink,this->m_level->m_levelName);
@@ -38,26 +41,40 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 				typeinfo_cast<CCSprite*>(Boo)->setOpacity(0);
 			}
 			this->m_fields->jsonSavedBRL = std::get<2>(*demonpos);
-			CCNode* rightside = this->getChildByIDRecursive("favorite-button");
+			CCNode* rightside = nullptr;
+
+			// fuck death tracker, Why must it be like this!
+			auto mod = Loader::get()->getLoadedMod("elohmrow.death_tracker");
+			if (mod) {
+				if (!mod->getSettingValue<bool>("left-menu")) {
+					rightside = this->getChildByIDRecursive("dt-skull-button"); 
+				}
+			};
+
 			if (!rightside) {
-				if (!Loader::get()->isModLoaded("geode.node-ids")) {
-					 if (auto menu = this->getChildByType<CCMenu>(3)) {
-						if (auto node = menu->getChildByType<CCNode>(1)) {
-							rightside = node;
+				rightside = this->getChildByIDRecursive("favorite-button");
+				if (!rightside) {
+					if (!Loader::get()->isModLoaded("geode.node-ids")) {
+						if (auto menu = this->getChildByType<CCMenu>(3)) {
+							if (auto node = menu->getChildByType<CCNode>(1)) {
+								rightside = node;
+							} else {
+								goto after;
+							}
 						} else {
 							goto after;
 						}
-					 } else {
-						goto after;
-					 }
-				} else {goto after;};
+					} else {goto after;};
+				}
 			}
 			if (this->m_fields->jsonSavedBRL.contains("verification")) {
 				auto btn = CCSprite::createWithSpriteFrameName("gj_ytIcon_001.png");
 				btn->setScale(0.75);
 				auto btnee = CCMenuItemSpriteExtra::create(btn, this, menu_selector(moddedLevelInfoLayer::YoutubeLink));
 				btnee->setPosition(rightside->getPosition() + ccp(0,rightside->getContentHeight()+2));
+				btnee->setID("Youtube"_spr);
 				rightside->getParent()->addChild(btnee);
+				rightside->updateLayout();
 			}
 			after:
 				CCSprite* mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);

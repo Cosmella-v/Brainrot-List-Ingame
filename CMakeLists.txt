@@ -9,6 +9,7 @@ set(WEBVIEW_USE_BUILTIN_MSWEBVIEW2,)
 # Add source files for the project
 add_library(${PROJECT_NAME} SHARED
     src/main.cpp
+    src/CustomSearch/Creatorlayer.cpp
     src/Demon/LevelCell.cpp
     src/Demon/LevelInfoLayer.cpp
     # Add any extra C++ source files here

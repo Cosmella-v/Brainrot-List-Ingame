@@ -148,21 +148,12 @@ inline void RequestApi(bool retry,std::string Url, std::function<void(matjson::V
                     if (!onfail) {
                         return;
                     } else {
-                        try {
-                            onfail();
-                        } catch (const std::exception& ex) {
-                        log::error("Error doing function", ex.what());
-                    }
+                        onfail();
                     }
                 }
                return;
             }
-
-            try {
-                fun(json); 
-            } catch (const std::exception& ex) {
-                 log::error("Error doing function", ex.what());
-            }
+            fun(json); 
         },
         [](auto prog) {
             
@@ -174,11 +165,7 @@ inline void RequestApi(bool retry,std::string Url, std::function<void(matjson::V
                     if (!onfail) {
                         return;
                     } else {
-                        try {
-                            onfail();
-                        } catch (const std::exception& ex) {
-                        log::error("Error doing function", ex.what());
-                    }
+                        onfail();
                     }
                 }
             //log::warn("Request was cancelled.");

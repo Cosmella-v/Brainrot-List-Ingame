@@ -13,35 +13,13 @@
 #include <chrono>
 #include "Packlist.hpp"
 #include <Geode/modify/MapPackCell.hpp>
+#include <Geode/utils/NodeIDs.hpp>
+using namespace geode::node_ids;
 #ifndef GEODE_IS_ANDROID
 #include <sys/timeb.h>
 #endif
 double timeBD = 0;
 double m_stopratelimit = 0;
-
-inline bool isSpriteFrameName(CCNode* node, const char* name) {
-    if (!node) return false;
-
-    auto cache = CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(name);
-    if (!cache) return false;
-
-    auto* texture = cache->getTexture();
-    auto rect = cache->getRect();
-
-    if (auto* spr = typeinfo_cast<CCSprite*>(node)) {
-        if (spr->getTexture() == texture && spr->getTextureRect() == rect) {
-            return true;
-        }
-    } else if (auto* btn = typeinfo_cast<CCMenuItemSprite*>(node)) {
-        auto* img = btn->getNormalImage();
-        if (auto* spr = typeinfo_cast<CCSprite*>(img)) {
-            if (spr->getTexture() == texture && spr->getTextureRect() == rect) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
 
 using namespace std::chrono;
 class $modify(FixMapPackCell, MapPackCell) {
@@ -267,7 +245,7 @@ class $modify(BRlist, LevelBrowserLayer) {
         if (this->m_fields->MapPack_Br) {
             max = BRPacks::maxcount;
         } else {
-            max = (BrType::LevelID.size() / 10);
+            max = ((BrType::LevelID.size()-1) / 10);
         }
 
         if (this->m_fields->m_currentPage <= 0) {
@@ -282,7 +260,7 @@ class $modify(BRlist, LevelBrowserLayer) {
         if (this->m_fields->MapPack_Br) {
             max = BRPacks::maxcount;
         } else {
-            max = (BrType::LevelID.size() / 10);
+            max = ((BrType::LevelID.size()-1) / 10);
         }
         if (this->m_fields->m_currentPage == max) {
             return;
@@ -311,7 +289,7 @@ class $modify(BRlist, LevelBrowserLayer) {
         if (this->m_fields->MapPack_Br) {
             max = BRPacks::maxcount;
         } else {
-            max = (BrType::LevelID.size() / 10);
+            max = ((BrType::LevelID.size()-1) / 10);
         }
         if (this->m_fields->m_currentPage < max) {
             this->m_fields->m_currentPage += 1;
@@ -359,7 +337,7 @@ class $modify(BRlist, LevelBrowserLayer) {
             max = (BrType::LevelID.size() / 10);
         }
 
-        SetIDPopup* popup = SetIDPopup::create(this->m_fields->m_currentPage+1,1,(max)+1,"Go to Page","OK",true,1,60,false,false);
+        SetIDPopup* popup = SetIDPopup::create(this->m_fields->m_currentPage+1,1,(max),"Go to Page","OK",true,1,60,false,false);
         popup->m_delegate = this;
         popup->show();
     }
