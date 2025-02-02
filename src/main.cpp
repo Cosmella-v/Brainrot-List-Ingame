@@ -36,6 +36,7 @@ class $modify(HookSearch, LevelSearchLayer) {
 
 class $modify(MenuLayer) {
     bool init() {
+		if (!MenuLayer::init()) return false;
 		if (level_map.empty()) {
 			std::thread([=] {  
 				getlistjson([=](matjson::Value response) {
@@ -84,6 +85,6 @@ class $modify(MenuLayer) {
 				}, nullptr);
 			}).detach();
     	}
-		return MenuLayer::init();
+		return true;
 	}
 };
