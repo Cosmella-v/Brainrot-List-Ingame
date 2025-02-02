@@ -23,10 +23,11 @@ class $modify(LevelCell) {
 			BrType::parseRequestString(level_map);
 		}
 		LevelCell::loadFromLevel(p0);
+		bool dontDoBRLSprite = false;
 		if (Mod::get()->getSettingValue<bool>("brl-layer-only")) {
 			auto levelBrowserLayer = CCScene::get()->getChildByType<LevelBrowserLayer>(0);
 			if (levelBrowserLayer) {
-				if (!levelBrowserLayer->getUserObject("modified-by-brl"_spr)) return; // for full BRL list layer
+				if (!levelBrowserLayer->getUserObject("modified-by-brl"_spr)) dontDoBRLSprite = true; // for full BRL list layer
 				else if (levelBrowserLayer->m_list) {
 					auto label = levelBrowserLayer->m_list->getChildByType<CCLabelBMFont>(0);
 					if (label) {
@@ -42,6 +43,8 @@ class $modify(LevelCell) {
 				}
 			}
 		}
+		if (dontDoBRLSprite) return;
+
 		CCNode* difficultyNode = m_mainLayer->getChildByID("difficulty-container");
 		if (!difficultyNode) return;
 		CCNode* difficultySpr = difficultyNode->getChildByID("difficulty-sprite");
