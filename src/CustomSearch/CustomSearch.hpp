@@ -32,7 +32,7 @@ using namespace std::chrono;
 
 class $modify(FixMapPackCell, MapPackCell) {
     static void onModify(auto& self) {
-        (void)self.setHookPriority("MapPackCell::loadFromMapPack", INT_MIN/2); 
+        (void)self.setHookPriority("MapPackCell::loadFromMapPack", -3998); 
     }
     struct Fields {
         bool m_modifiedByBRL = false;
@@ -41,7 +41,7 @@ class $modify(FixMapPackCell, MapPackCell) {
         MapPackCell::loadFromMapPack(cell);
         if (cell->getUserObject("brl_modified"_spr)) {
             this->m_fields->m_modifiedByBRL = true;
-            this->m_viewButton->m_pfnSelector = (cocos2d::SEL_MenuHandler)(&FixMapPackCell::onBRLMapPack);
+            this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);
 
             // no fucking node ids and rob fucked up the code
             CCSprite* spr = this->getChildByType<CCSprite>(0);
@@ -50,7 +50,7 @@ class $modify(FixMapPackCell, MapPackCell) {
                 for (auto item : CCArrayExt<CCNode*>(this->getChildren())) {
                     auto sprite = typeinfo_cast<CCSprite*>(item);
                     if (!sprite || sprite->getChildByID("brl-map-pack-sprite"_spr)) continue;
-                    item->setVisible(false);
+                    item->setOpacity(0);
                 }
                 CCNode* mdSpr = this->getChildByID("brl-map-pack-sprite"_spr);
                 if (!mdSpr) {
@@ -110,9 +110,9 @@ double getFullDoubleTime() {
 }
 
 
-class $modify(BRlist, LevelBrowserLayer) {
+class $modify(BRList, LevelBrowserLayer) {
     static void onModify(auto& self) {
-        (void) self.setHookPriority("LevelBrowserLayer::init", INT_MIN/2-1); 
+        (void) self.setHookPriority("LevelBrowserLayer::init", -3998); 
     }
     struct Fields {
         int m_currentPage = 0;
@@ -137,7 +137,7 @@ class $modify(BRlist, LevelBrowserLayer) {
                     CircleBaseSize::Small
                 ),
                 this,
-                menu_selector(BRlist::switchThing)
+                menu_selector(BRList::switchThing)
             );
         } else {
             returns = CCMenuItemSpriteExtra::create(
@@ -147,7 +147,7 @@ class $modify(BRlist, LevelBrowserLayer) {
                     CircleBaseSize::Small
                 ),
                 this,
-                menu_selector(BRlist::switchThing)
+                menu_selector(BRList::switchThing)
             );
          };
 
@@ -187,13 +187,13 @@ class $modify(BRlist, LevelBrowserLayer) {
             int page = this->m_fields->m_currentPage;
             this->m_fields->m_lowIdx = page * 10;
             bool inits = LevelBrowserLayer::init(BrType::getSearchObject(10, 0, this->m_fields->MapPack_Br));
-            updText();
+            updateText();
             createButton();
             return inits;
         }
         if (!this->m_fields->isBrainrot) {
             bool inits = LevelBrowserLayer::init(p0);
-            updText();
+            updateText();
             return inits;
         }
 
@@ -211,19 +211,13 @@ class $modify(BRlist, LevelBrowserLayer) {
         hideStuff();
         return true;
     }
-    void updText() {
+    void updateText() {
         if (!this->m_fields->mapPackText.empty()) {
-                if (CCNode* CFix = this->m_list) {
-                    if (!Loader::get()->isModLoaded("geode.node-ids")) {
-                        if (CCLabelBMFont* TextLab = CFix->getChildByType<CCLabelBMFont>(0)) {
-                            TextLab->setString(this->m_fields->mapPackText.c_str());
-                        };
-                    } else {
-                        if (CCNode* TextLab = CFix->getChildByID("title")) {
-                            typeinfo_cast<CCLabelBMFont*>(TextLab)->setString(this->m_fields->mapPackText.c_str());
-                        };
-                    }
-                }
+            if (CCNode* levelList = this->m_list) {
+                if (CCLabelBMFont* titleLabel = typeinfo_cast<CCLabelBMFont*>(levelList->getChildByID("title"))) {
+                    titleLabel->setString(this->m_fields->mapPackText.c_str());
+                };
+            }
         }
     }
     void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1, int p2) {
@@ -231,7 +225,7 @@ class $modify(BRlist, LevelBrowserLayer) {
             p0 = BRPacks::GetPacks(this->m_fields->m_currentPage * 10);
         } 
         LevelBrowserLayer::loadLevelsFinished(p0, p1, p2);
-        updText();
+        updateText();
         if (!this->m_fields->isBrainrot && !this->m_fields->MapPack_Br) {
             return;
         }
@@ -261,7 +255,7 @@ class $modify(BRlist, LevelBrowserLayer) {
             nextBtn->setVisible(false);
         }
     }
-    void lastpage(auto h) {
+    void lastPage(auto h) {
         int max = 0;
         if (this->m_fields->MapPack_Br) {
             max = BRPacks::maxcount;
@@ -275,7 +269,7 @@ class $modify(BRlist, LevelBrowserLayer) {
         nextBtnActions();
     }
 
-    void firstpage(auto h) {
+    void firstPage(auto h) {
          if (this->m_fields->m_currentPage == 0) {
             return;
         };
@@ -284,7 +278,7 @@ class $modify(BRlist, LevelBrowserLayer) {
     }
 
     void onNextPage(CCObject* sender) {
-        updText();
+        updateText();
         if (!this->m_fields->isBrainrot && !this->m_fields->MapPack_Br) {
             return LevelBrowserLayer::onNextPage(sender);
         }
@@ -323,7 +317,7 @@ class $modify(BRlist, LevelBrowserLayer) {
             return;
         }
         if (p1 >= max) {
-           return lastpage(nullptr);
+           return lastPage(nullptr);
         };
         this->m_fields->m_currentPage = p1;
 
@@ -343,13 +337,13 @@ class $modify(BRlist, LevelBrowserLayer) {
             max = (BrType::LevelID.size() / 10);
         }
 
-        SetIDPopup* popup = SetIDPopup::create(this->m_fields->m_currentPage+1,1,(max),"Go to Page","OK",true,1,60,false,false);
+        SetIDPopup* popup = SetIDPopup::create(this->m_fields->m_currentPage + 1, 1, (max), "Go to Page", "OK", true, 1, 60, false, false);
         popup->m_delegate = this;
         popup->show();
     }
 
     void onPrevPage(CCObject* sender) {
-        updText();
+        updateText();
         
         if (!this->m_fields->isBrainrot && !this->m_fields->MapPack_Br) {
             return LevelBrowserLayer::onPrevPage(sender);
@@ -365,30 +359,30 @@ class $modify(BRlist, LevelBrowserLayer) {
     }
     void loadPage(GJSearchObject* type) {
         LevelBrowserLayer::loadPage(type);
-        updText();
+        updateText();
         return;
     }
-    void fixtimeout(auto h) {
+    void fixTimeout(auto h) {
         m_stopratelimit = getFullDoubleTime() + timeBD;
-        BRlist::loadPage(BrType::getSearchObject( ((BrType::LevelID.size() - 10 - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1, (((BrType::LevelID.size()) - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) *-1,this->m_fields->MapPack_Br ));
+        BRList::loadPage(BrType::getSearchObject( ((BrType::LevelID.size() - 10 - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) * -1, (((BrType::LevelID.size()) - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) * -1,this->m_fields->MapPack_Br ));
         this->m_pageBtn->setVisible(true);
-        if (CCNode* first_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/first-button")) {
-            first_Betterinfo->setVisible(this->m_fields->m_currentPage != 0);
+        if (CCNode* betterInfoFirstPage = this->getChildByIDRecursive("cvolton.betterinfo/first-button")) {
+            betterInfoFirstPage->setVisible(this->m_fields->m_currentPage != 0);
         }
         hideStuff();
     }
     void nextBtnActions() {
         hideStuff();
         timeBD = 0.85 - (getFullDoubleTime() - m_stopratelimit);
-        if(timeBD < 0) {
+        if (timeBD < 0) {
             timeBD = 0;
-            fixtimeout(nullptr);
+            fixTimeout(nullptr);
         } else {
             if (CCNode* CFix = this->m_list->m_listView) {
                 CFix->setVisible(false);
             }
             this->m_circle->setVisible(true);
-            this->getScheduler()->scheduleSelector((cocos2d::SEL_SCHEDULE)(&BRlist::fixtimeout), this, 1, 0, timeBD, false);
+            this->getScheduler()->scheduleSelector(schedule_selector(BRList::fixTimeout), this, 1, 0, timeBD, false);
         }
     }
     void hideStuff() {
@@ -402,16 +396,16 @@ class $modify(BRlist, LevelBrowserLayer) {
             largesize = BrType::LevelID.size();
         }
 
-        if (CCNode* last_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/last-button")) {
-            typeinfo_cast<CCMenuItemSpriteExtra*>(last_Betterinfo)->m_pfnSelector = (cocos2d::SEL_MenuHandler)(&BRlist::lastpage);
-             last_Betterinfo->setVisible(this->m_fields->m_currentPage < max);
+        if (auto betterInfoLastPage = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("cvolton.betterinfo/last-button"))) {
+            betterInfoLastPage->m_pfnSelector = menu_selector(BRList::lastPage);
+            betterInfoLastPage->setVisible(this->m_fields->m_currentPage < max);
         }
-        if (CCNode* filter_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/filter-button")) {
-            filter_Betterinfo->setVisible(false);
+        if (auto betterInfoFilter = this->getChildByIDRecursive("cvolton.betterinfo/filter-button")) {
+            betterInfoFilter->setVisible(false);
         }
-        if (CCNode* first_Betterinfo = this->getChildByIDRecursive("cvolton.betterinfo/first-button")) {
-            typeinfo_cast<CCMenuItemSpriteExtra*>(first_Betterinfo)->m_pfnSelector = (cocos2d::SEL_MenuHandler)(&BRlist::firstpage);
-            first_Betterinfo->setVisible(this->m_fields->m_currentPage != 0);
+        if (auto betterInfoFirstPage = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("cvolton.betterinfo/first-button"))) {
+            betterInfoFirstPage->m_pfnSelector = menu_selector(BRList::firstPage);
+            betterInfoFirstPage->setVisible(this->m_fields->m_currentPage != 0);
         }
         auto prevBtn = this->m_leftArrow;
         auto nextBtn = this->m_rightArrow;
@@ -435,14 +429,14 @@ class $modify(BRlist, LevelBrowserLayer) {
             BrType::shownServerError = false;
             if (level_map.empty()) { 
                 getlistjson([=](matjson::Value response) {
-                        int order = 0;
-                        for (const auto& item : response.asArray().unwrap()) {
-                            order+=1;
-                            int curord = order;
-                            getleveljson(item.asString().unwrap(), [=](matjson::Value response) {
-                                level_map[curord] = response;
-                            });
-                        }
+                    int order = 0;
+                    for (const auto& item : response.asArray().unwrap()) {
+                        order += 1;
+                        int curord = order;
+                        getleveljson(item.asString().unwrap(), [=](matjson::Value response) {
+                            level_map[curord] = response;
+                        });
+                    }
                 },[=]() {
                     if (BrType::shownServerError) {
                         return;
@@ -455,17 +449,17 @@ class $modify(BRlist, LevelBrowserLayer) {
             }
 
             if (BRPacks::PacksIDs.empty()) {
-                    getpackjson([=](matjson::Value response) {
-                        for (auto item : response.asArray().unwrap()) {
-                            log::debug("{}", item.dump());
-                            for (const auto& lels : item["levels"].asArray().unwrap()) {
-                                getleveljson(lels.asString().unwrap(), [=](matjson::Value response) {
-                                    BRPacks::level_map[lels.asString().unwrap()] = response;
-                                    BRPacks::levelid_map[response["id"].asInt().unwrap()] = response;
-                                });
-                            }
-                            BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
+                getpackjson([=](matjson::Value response) {
+                    for (auto item : response.asArray().unwrap()) {
+                        log::debug("{}", item.dump());
+                        for (const auto& lels : item["levels"].asArray().unwrap()) {
+                            getleveljson(lels.asString().unwrap(), [=](matjson::Value response) {
+                                BRPacks::level_map[lels.asString().unwrap()] = response;
+                                BRPacks::levelid_map[response["id"].asInt().unwrap()] = response;
+                            });
                         }
+                        BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
+                    }
                 },[=]() {
                     if (BrType::shownServerError) {
                         return;
@@ -479,7 +473,7 @@ class $modify(BRlist, LevelBrowserLayer) {
     }
     void updatePageLabel() {
             LevelBrowserLayer::updatePageLabel();
-            updText();
+            updateText();
             if (!this->m_fields->isBrainrot) {
                 return;
             }

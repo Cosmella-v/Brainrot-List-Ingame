@@ -14,25 +14,7 @@ class $modify(HookSearch, LevelSearchLayer) {
 		}
 		CCNode* otherFilterMenu;
 		otherFilterMenu = this->getChildByID("other-filter-menu");
-		if (!otherFilterMenu) {
-			 if (!Loader::get()->isModLoaded("geode.node-ids")) {
-				 otherFilterMenu = this->getChildByType<CCMenu>(0);
-				if (!otherFilterMenu) return true;
-				// bug fix
-				if (!otherFilterMenu->getLayout()) {
-					auto winSize = CCDirector::get()->getWinSize();
-					otherFilterMenu->setLayout(
-						ColumnLayout::create()
-							->setAxisReverse(true)
-							->setGap(10)
-							->setAxisAlignment(AxisAlignment::End)
-					);
-					otherFilterMenu->setAnchorPoint({1, 0.5f});
-					otherFilterMenu->setPosition({winSize.width - 5, otherFilterMenu->getPositionY()});
-					otherFilterMenu->setContentSize({otherFilterMenu->getContentSize().width, winSize.height-10});
-				}
-			 } else return true;
-		}
+		if (!otherFilterMenu) return true;
 		auto BRL_Button = CCMenuItemSpriteExtra::create(
 			 CircleButtonSprite::createWithSprite(
                 "list_icon.png"_spr, 1.1,

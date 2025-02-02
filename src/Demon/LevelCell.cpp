@@ -17,7 +17,7 @@ class $modify(SetIDPopup) {
 
 class $modify(LevelCell) {
 	static void onModify(auto& self) {
-        (void)self.setHookPriority("LevelCell::loadFromLevel", INT_MIN/2-1); 
+        (void)self.setHookPriority("LevelCell::loadFromLevel", -3998);
     }
 	void loadFromLevel(GJGameLevel* p0) {
 		if (!BrType::LoadedAllLevels) {

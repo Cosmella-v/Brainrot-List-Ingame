@@ -7,16 +7,15 @@ using namespace geode::prelude;
 
 class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 	static void onModify(auto& self) {
-        (void)self.setHookPriority("LevelInfoLayer::init", INT_MIN/2-1); 
+        (void)self.setHookPriority("LevelInfoLayer::init", -3998); 
     }
-	void YoutubeLink(CCObject*) {
+	void onYTVerification(CCObject*) {
 		if (!this->m_fields->jsonSavedBRL.contains("verification") || !this->m_fields->jsonSavedBRL["verification"].isString()) {
 			return; // the field is wrong smh
 		};
-		std::string VideoLink = WebviewUrl::ConvertToEmbed(this->m_fields->jsonSavedBRL["verification"].asString().unwrapOr("f"));
-		if (VideoLink != "f") {
-			WebviewUrl::Open(VideoLink,this->m_level->m_levelName);
-		};
+		std::string VideoLink = WebviewUrl::ConvertToEmbed(this->m_fields->jsonSavedBRL["verification"].asString().unwrapOr("failure"));
+		if (VideoLink == "failure") return;
+		WebviewUrl::Open(VideoLink,this->m_level->m_levelName);
 	}
 	struct Fields {
 		matjson::Value jsonSavedBRL;
@@ -35,55 +34,39 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 			demonpos = BRPacks::find(p0->m_levelID);
 		}
 		if (demonpos) {
-			if (CCNode* Boo = this->getChildByIDRecursive("uproxide.more_difficulties/more-difficulties-spr")) {
-				Boo->setScale(0);
-				Boo->setVisible(false);
-				typeinfo_cast<CCSprite*>(Boo)->setOpacity(0);
+			if (CCNode* moreDifficultiesSprite = this->getChildByIDRecursive("uproxide.more_difficulties/more-difficulties-spr")) {
+				moreDifficultiesSprite->setScale(0);
+				moreDifficultiesSprite->setVisible(false);
+				typeinfo_cast<CCSprite*>(moreDifficultiesSprite)->setOpacity(0);
 			}
 			this->m_fields->jsonSavedBRL = std::get<2>(*demonpos);
-			CCNode* rightside = nullptr;
+			CCNode* menuForYTButton = nullptr;
 
 			// fuck death tracker, Why must it be like this!
-			auto mod = Loader::get()->getLoadedMod("elohmrow.death_tracker");
-			if (mod) {
-				if (!mod->getSettingValue<bool>("left-menu")) {
-					rightside = this->getChildByIDRecursive("dt-skull-button"); 
+			auto deathTracker = Loader::get()->getLoadedMod("elohmrow.death_tracker");
+			if (deathTracker) {
+				if (!deathTracker->getSettingValue<bool>("left-menu")) {
+					menuForYTButton = this->getChildByIDRecursive("dt-skull-button"); 
 				}
 			};
 
-			if (!rightside) {
-				rightside = this->getChildByIDRecursive("favorite-button");
-				if (!rightside) {
-					if (!Loader::get()->isModLoaded("geode.node-ids")) {
-						if (auto menu = this->getChildByType<CCMenu>(3)) {
-							if (auto node = menu->getChildByType<CCNode>(1)) {
-								rightside = node;
-							} else {
-								goto after;
-							}
-						} else {
-							goto after;
-						}
-					} else {goto after;};
-				}
-			}
+			if (!menuForYTButton) menuForYTButton = this->getChildByIDRecursive("favorite-button");
 			if (this->m_fields->jsonSavedBRL.contains("verification")) {
-				auto btn = CCSprite::createWithSpriteFrameName("gj_ytIcon_001.png");
-				btn->setScale(0.75);
-				auto btnee = CCMenuItemSpriteExtra::create(btn, this, menu_selector(moddedLevelInfoLayer::YoutubeLink));
-				btnee->setPosition(rightside->getPosition() + ccp(0,rightside->getContentHeight()+2));
-				btnee->setID("brl-youtube-verification"_spr);
-				rightside->getParent()->addChild(btnee);
-				rightside->updateLayout();
+				auto buttonSprite = CCSprite::createWithSpriteFrameName("gj_ytIcon_001.png");
+				buttonSprite->setScale(0.75);
+				auto button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(moddedLevelInfoLayer::onYTVerification));
+				button->setPosition(menuForYTButton->getPosition() + ccp(0,menuForYTButton->getContentHeight()+2));
+				button->setID("brl-youtube-verification"_spr);
+				menuForYTButton->getParent()->addChild(button);
+				menuForYTButton->updateLayout();
 			}
-			after:
-				CCSprite* mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
-				mdSpr->setPosition(difficultyPos);
-				if (mdSpr->getParent() != this) this->addChild(mdSpr);
-				mdSpr->setZOrder(zOrder);
-				mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
-				m_difficultySprite->setOpacity(0);
-				mdSpr->setID("brl-difficulty-sprite"_spr);
+			CCSprite* mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
+			mdSpr->setPosition(difficultyPos);
+			if (mdSpr->getParent() != this) this->addChild(mdSpr);
+			mdSpr->setZOrder(zOrder);
+			mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
+			m_difficultySprite->setOpacity(0);
+			mdSpr->setID("brl-difficulty-sprite"_spr);
 		}
 		return true;
 	}
