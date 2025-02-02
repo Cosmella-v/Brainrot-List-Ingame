@@ -76,7 +76,7 @@ class $modify(FixMapPackCell, MapPackCell) {
         if (!parent) return;
         log::info("found levelbrowserlayer parent");
         if (parent->getUserObject("modified-by-brl"_spr)) {
-        log::info("found levelbrowserlayer parent's user object");
+            log::info("found levelbrowserlayer parent's user object");
             this->m_fields->m_modifiedByBRL = true;
             this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);
 
@@ -159,12 +159,6 @@ class $modify(BRList, LevelBrowserLayer) {
          if (CCNode* spr = makeBRLButtonSprite()) {
             CCMenu* menu = CCMenu::create();
             auto winSize = CCDirector::get()->getWinSize();
-            menu->setLayout(
-						ColumnLayout::create()
-							->setAxisReverse(true)
-							->setGap(10)
-							->setAxisAlignment(AxisAlignment::End)
-					);
 			menu->setContentSize({menu->getContentSize().width, winSize.height-10});
             menu->setID("brl-extra"_spr);
             menu->setPosition({63,260});
@@ -174,7 +168,12 @@ class $modify(BRList, LevelBrowserLayer) {
             menu->setAnchorPoint({1.3,0.950}); 
             this->addChild(menu);
             menu->addChild(spr);
-            menu->updateLayout();
+            menu->setLayout(
+                ColumnLayout::create()
+                    ->setAxisReverse(true)
+                    ->setGap(10)
+                    ->setAxisAlignment(AxisAlignment::End)
+            );
         }
 
     }
