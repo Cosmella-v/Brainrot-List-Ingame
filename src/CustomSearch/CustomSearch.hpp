@@ -78,27 +78,26 @@ class $modify(FixMapPackCell, MapPackCell) {
 
             // no fucking node ids and rob fucked up the code
             CCSprite* spr = this->getChildByType<CCSprite>(0);
-            if (spr) {
-                cocos2d::CCPoint difficultyPos = spr->getPosition() + CCPoint { .0f, .0f };
-                for (auto item : CCArrayExt<CCNode*>(this->getChildren())) {
-                    auto spr = typeinfo_cast<CCSprite*>(item)
-                    if (!spr) continue;
-                    if (!item->getChildByID("brl-map-pack-sprite"_spr)) {
-                        spr->setScale(0);
-                        spr->setVisible(false);
-                    }
+            if (!spr) return;
+
+            cocos2d::CCPoint difficultyPos = spr->getPosition() + CCPoint { .0f, .0f };
+            for (auto item : CCArrayExt<CCNode*>(this->getChildren())) {
+                auto spr = typeinfo_cast<CCSprite*>(item);
+                if (!spr) continue;
+                if (!item->getChildByID("brl-map-pack-sprite"_spr)) {
+                    spr->setScale(0);
+                    spr->setVisible(false);
                 }
-                CCNode* mdSpr;
-                if (mdSpr = this->getChildByID("brl-map-pack-sprite"_spr)) {}
-                else mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
-                mdSpr->setPosition(difficultyPos);
-                if (mdSpr->getParent() != this) this->addChild(mdSpr);
-                mdSpr->setZOrder(spr->getZOrder());
-                mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
-                mdSpr->setID("brl-map-pack-sprite"_spr);
             }
+            CCNode* mdSpr;
+            if (mdSpr = this->getChildByID("brl-map-pack-sprite"_spr)) {}
+            else mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
+            mdSpr->setPosition(difficultyPos);
+            if (mdSpr->getParent() != this) this->addChild(mdSpr);
+            mdSpr->setZOrder(spr->getZOrder());
+            mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
+            mdSpr->setID("brl-map-pack-sprite"_spr);
         }
-        return;
     }
 
     void onBRLMapPack(CCObject*) {
