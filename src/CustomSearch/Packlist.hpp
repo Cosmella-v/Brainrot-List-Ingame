@@ -66,8 +66,11 @@ private:
         std::stringstream download;
         bool first = true;
         for (auto level : levels) {
+            int levelID = BRPacks::level_map.at(level.asString().unwrap())["id"].asInt().unwrapOr(-1);
+            log::info("levelID: {}", levelID);
+            if (levelID == -1) continue;
             if (!first) download << ",";
-            download << std::to_string(BRPacks::level_map.at(level.asString().unwrap())["id"].asInt().unwrap());
+            download << std::to_string(levelID);
             first = false;
         }
         packData->setObject(CCString::create(download.str()), "3");
