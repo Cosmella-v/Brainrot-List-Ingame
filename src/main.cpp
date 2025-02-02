@@ -58,7 +58,7 @@ class $modify(MenuLayer) {
 			}).detach();
 		}
 		if (BRPacks::PacksIDs.empty()) {
-			std::thread([=] {  
+			std::thread([=] {
 				getBRPackJSON([=](matjson::Value response) {
 					if (!response.isArray()) {
 						return log::error("reading json packs is not expected (array expected)");

@@ -72,10 +72,7 @@ class $modify(FixMapPackCell, MapPackCell) {
     };
     void loadFromMapPack(GJMapPack* cell) {
         MapPackCell::loadFromMapPack(cell);
-        auto parent = CCScene::get()->getChildByType<LevelBrowserLayer>(0);
-        if (!parent) return;
-        log::info("found levelbrowserlayer parent");
-        if (parent->getUserObject("modified-by-brl"_spr)) {
+        if (this->getUserObject("modified-by-brl"_spr)) {
             log::info("found levelbrowserlayer parent's user object");
             this->m_fields->m_modifiedByBRL = true;
             this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);

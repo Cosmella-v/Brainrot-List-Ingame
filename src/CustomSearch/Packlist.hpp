@@ -56,33 +56,25 @@ private:
     static GJMapPack* CreateBasePack(int index, std::tuple<std::string,matjson::Value> packet) {
         CCDictionary* packdata = CCDictionary::create();
         GJMapPack* pack;
-        try {
-            //log::debug("{}",std::get<0>(packet));
-            packdata->setObject(CCString::create(std::to_string(index)), "1");
-            packdata->setObject(CCString::create(std::get<0>(packet)), "2");
-            std::stringstream download;
-            bool first = true;
-            for (auto level : std::get<1>(packet).asArray().unwrap()) {
-                if (!first) {
-                    download << ",";
-                }
-                download << std::to_string(BRPacks::level_map.at(level.asString().unwrap())["id"].asInt().unwrap());
-                first = false;
-            }
-            packdata->setObject(CCString::create(download.str()), "3");
-
-            packdata->setObject(CCString::create("0"), "4");
-            packdata->setObject(CCString::create("0"), "5");
-            packdata->setObject(CCString::create("6"), "6");
-            packdata->setObject(CCString::create("255,255,255"), "7");
-            packdata->setObject(CCString::create("255,255,255"), "8");
-            pack= GJMapPack::create(packdata);
-            pack->setUserObject("brl_modified"_spr,CCBool::create(true));
-            return pack;
-        } catch (const std::exception& e) {
-            //log::error("error is {}",e.what());
-            pack = nullptr;
+        //log::debug("{}",std::get<0>(packet));
+        packdata->setObject(CCString::create(std::to_string(index)), "1");
+        packdata->setObject(CCString::create(std::get<0>(packet)), "2");
+        std::stringstream download;
+        bool first = true;
+        for (auto level : std::get<1>(packet).asArray().unwrap()) {
+            if (!first) download << ",";
+            download << std::to_string(BRPacks::level_map.at(level.asString().unwrap())["id"].asInt().unwrap());
+            first = false;
         }
+        packdata->setObject(CCString::create(download.str()), "3");
+
+        packdata->setObject(CCString::create("0"), "4");
+        packdata->setObject(CCString::create("0"), "5");
+        packdata->setObject(CCString::create("6"), "6");
+        packdata->setObject(CCString::create("255,255,255"), "7");
+        packdata->setObject(CCString::create("255,255,255"), "8");
+        pack= GJMapPack::create(packdata);
+        pack->setUserObject("modified-by-brl"_spr, CCBool::create(true));
         return pack;
     }
 };
