@@ -53,25 +53,42 @@ public:
     }
 
 private:
-    static GJMapPack* createBRPack(int index, std::tuple<std::string,matjson::Value> packet) {
-        log::info("attempting to create pack: {} index, {} foobar", index, std::get<0>(packet));
+    static GJMapPack* createBRPack(int mapPackID, std::tuple<std::string,matjson::Value> packet) {
+        std::string mapPackName = std::get<0>(packet);
+        log::info("attempting to create pack: map pack ID {}, map pack name {}", mapPackID, mapPackName);
         if (!std::get<1>(packet).isArray()) return nullptr;
+
         auto levels = std::get<1>(packet).asArray().unwrap();
-        if (levels.empty()) return nullptr;
+        if (mapPackName.empty() || levels.empty()) return nullptr;
+
         CCDictionary* packData = CCDictionary::create();
         GJMapPack* pack;
-        //log::debug("{}",std::get<0>(packet));
-        packData->setObject(CCString::create(std::to_string(index)), "1");
-        packData->setObject(CCString::create(std::get<0>(packet)), "2");
+
+        // log::debug("mapPackName: {}", mapPackName);
+        packData->setObject(CCString::create(utils::numToString(mapPackID)), "1");
+        packData->setObject(CCString::create(mapPackName), "2");
+
         std::stringstream download;
         bool first = true;
         for (auto level : levels) {
-            int levelID = BRPacks::level_map.at(level.asString().unwrap())["id"].asInt().unwrapOr(-1);
+            std::string levelName = level.asString().unwrap();
+
+            if (levelName.empty()) continue;
+            if (BRPacks::level_map.find(levelName) == BRPacks::level_map.end()) continue;
+
+            auto attemptedSearch = BRPacks::level_map.at(levelName);
+            if (!attemptedSearch.contains("id")) continue;
+
+            auto attemptedSearchWithID = attemptedSearch["id"];
+            int levelID = attemptedSearchWithID.asInt().unwrapOr(-1);
             log::info("levelID: {}", levelID);
+
             if (levelID == -1) continue;
+
             if (!first) download << ",";
-            download << std::to_string(levelID);
             first = false;
+            
+            download << utils::numToString(levelID);
         }
         packData->setObject(CCString::create(download.str()), "3");
 
