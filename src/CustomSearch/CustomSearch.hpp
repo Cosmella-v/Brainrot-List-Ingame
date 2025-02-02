@@ -425,12 +425,12 @@ class $modify(BRList, LevelBrowserLayer) {
             }
             BrType::shownServerError = false;
             if (level_map.empty()) { 
-                getlistjson([=](matjson::Value response) {
+                getBRListJSON([=](matjson::Value response) {
                     int order = 0;
                     for (const auto& item : response.asArray().unwrap()) {
                         order += 1;
                         int curord = order;
-                        getleveljson(item.asString().unwrap(), [=](matjson::Value response) {
+                        getBRLevelJSON(item.asString().unwrap(), [=](matjson::Value response) {
                             level_map[curord] = response;
                         });
                     }
@@ -446,11 +446,11 @@ class $modify(BRList, LevelBrowserLayer) {
             }
 
             if (BRPacks::PacksIDs.empty()) {
-                getpackjson([=](matjson::Value response) {
+                getBRPackJSON([=](matjson::Value response) {
                     for (auto item : response.asArray().unwrap()) {
                         log::debug("{}", item.dump());
                         for (const auto& lels : item["levels"].asArray().unwrap()) {
-                            getleveljson(lels.asString().unwrap(), [=](matjson::Value response) {
+                            getBRLevelJSON(lels.asString().unwrap(), [=](matjson::Value response) {
                                 BRPacks::level_map[lels.asString().unwrap()] = response;
                                 BRPacks::levelid_map[response["id"].asInt().unwrap()] = response;
                             });

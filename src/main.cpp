@@ -39,7 +39,7 @@ class $modify(MenuLayer) {
 		if (!MenuLayer::init()) return false;
 		if (level_map.empty()) {
 			std::thread([=] {  
-				getlistjson([=](matjson::Value response) {
+				getBRListJSON([=](matjson::Value response) {
 					if (!response.isArray()) {
 						return log::error("reading json is not expected (array expected)");
 					};
@@ -50,7 +50,7 @@ class $modify(MenuLayer) {
 						}
 						order += 1;
 						int curord = order;
-						getleveljson(item.asString().unwrap(), [=](matjson::Value response) {
+						getBRLevelJSON(item.asString().unwrap(), [=](matjson::Value response) {
 							level_map[curord] = response;
 						});
 					}
@@ -59,7 +59,7 @@ class $modify(MenuLayer) {
 		}
 		if (BRPacks::PacksIDs.empty()) {
 			std::thread([=] {  
-				getpackjson([=](matjson::Value response) {
+				getBRPackJSON([=](matjson::Value response) {
 					if (!response.isArray()) {
 						return log::error("reading json packs is not expected (array expected)");
 					}
@@ -74,7 +74,7 @@ class $modify(MenuLayer) {
 						}
 
 						for (const auto& lels : item["levels"].asArray().unwrap()) {
-							getleveljson(lels.asString().unwrap(), [=](matjson::Value response) {
+							getBRLevelJSON(lels.asString().unwrap(), [=](matjson::Value response) {
 								if (!response.contains("id") || !response["id"].isNumber()) { return log::error("reading json id for levels is not expected (number expected)"); }
 								BRPacks::level_map[lels.asString().unwrap()] = response;
 								BRPacks::levelid_map[response["id"].asInt().unwrap()] = response;
