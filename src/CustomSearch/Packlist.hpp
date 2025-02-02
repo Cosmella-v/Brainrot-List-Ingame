@@ -55,6 +55,7 @@ public:
 private:
     static GJMapPack* createBRPack(int index, std::tuple<std::string,matjson::Value> packet) {
         if (!std::get<1>(packet).isArray()) return nullptr;
+        if (std::get<1>(packet).asArray().unwrap().isErr()) return nullptr;
         CCDictionary* packData = CCDictionary::create();
         GJMapPack* pack;
         //log::debug("{}",std::get<0>(packet));
