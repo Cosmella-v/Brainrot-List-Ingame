@@ -30,12 +30,12 @@ using namespace geode::prelude;
 using namespace geode::node_ids;
 using namespace std::chrono;
 
-static void switchToBRLScene(bool mappack = false,bool init = true) {
+static void switchToBRLScene(bool mapPack = false, bool init = true) {
         if (!BrType::LoadedAllLevels) {
             BrType::parseRequestString(level_map);
             BrType::filterType = -1;
         }
-        if (mappack) {
+        if (mapPack) {
             BrType::MapPack_Br = true;
             BrType::isSearchingBR = false;
         } else {
@@ -43,10 +43,10 @@ static void switchToBRLScene(bool mappack = false,bool init = true) {
             BrType::MapPack_Br = false;
         }
         if (init) {
-            auto browserLayer = LevelBrowserLayer::scene(BrType::getSearchObject(10, 0,false));
+            auto browserLayer = LevelBrowserLayer::scene(BrType::getSearchObject(10, 0, false));
             CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
         } else {
-            auto browserLayer =LevelBrowserLayer::create(BrType::getSearchObject(10, 0,false));
+            auto browserLayer = LevelBrowserLayer::create(BrType::getSearchObject(10, 0, false));
             geode::cocos::switchToScene(browserLayer);
         }
 }
