@@ -65,7 +65,7 @@ double getFullDoubleTime() {
 
 class $modify(FixMapPackCell, MapPackCell) {
     static void onModify(auto& self) {
-        (void) self.setHookPriority("MapPackCell::loadFromMapPack", INT_MIN / 2); 
+        (void) self.setHookPriority("MapPackCell::loadFromMapPack", -3998); 
     }
     struct Fields {
         bool m_modifiedByBRL = false;
