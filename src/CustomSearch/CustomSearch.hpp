@@ -101,7 +101,6 @@ class $modify(FixMapPackCell, MapPackCell) {
 
     void onBRLMapPack(CCObject*) {
         // log::debug("Should load new scene");
-        log::info("this->m_mapPack->m_levelStrings: {}", this->m_mapPack->m_levelStrings);
         BrType::ShouldChangeText = this->m_mapPack->m_packName;
         auto browserLayer = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Type19, this->m_mapPack->m_levelStrings));
         CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
