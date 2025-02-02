@@ -132,7 +132,7 @@ class WebviewUrl {
         geode::utils::web::openLinkInBrowser(url);
     };
 };
-#endif;
+#endif
 
 static std::map<int,matjson::Value> level_map;
 
