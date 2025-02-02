@@ -1,3 +1,6 @@
+# 1.2.0
+- Require Node IDs.
+    - Let's be honest for a second: the effort necessary to work around the lack of node IDs being in someone's installed list is not worth it.
 # 1.1.1
 - android bug fixes
 - some bug fix
