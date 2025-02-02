@@ -72,7 +72,7 @@ class $modify(FixMapPackCell, MapPackCell) {
     };
     void loadFromMapPack(GJMapPack* cell) {
         MapPackCell::loadFromMapPack(cell);
-        if (this->getUserObject("modified-by-brl")) {
+        if (cell->getUserObject("modified-by-brl")) {
             this->m_fields->m_modifiedByBRL = true;
             this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);
 
