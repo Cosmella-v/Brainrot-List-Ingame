@@ -1,10 +1,14 @@
 #pragma once
+
 #include <Geode/Geode.hpp>
 #include <Geode/Bindings.hpp>
 #include <vector>
 #include <string>
+
 inline int offset = 5000;
+
 using namespace geode::prelude;
+
 class BRPacks {
 public:
     inline static std::map<std::string,matjson::Value> level_map;
