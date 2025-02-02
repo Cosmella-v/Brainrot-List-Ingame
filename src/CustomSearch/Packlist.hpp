@@ -55,7 +55,7 @@ public:
 private:
     static GJMapPack* createBRPack(int mapPackID, std::tuple<std::string,matjson::Value> packet) {
         std::string mapPackName = std::get<0>(packet);
-        log::info("attempting to create pack: map pack ID {}, map pack name {}", mapPackID, mapPackName);
+        // log::info("attempting to create pack: map pack ID {}, map pack name {}", mapPackID, mapPackName);
         if (!std::get<1>(packet).isArray()) return nullptr;
 
         auto levels = std::get<1>(packet).asArray().unwrap();
@@ -81,13 +81,13 @@ private:
 
             auto attemptedSearchWithID = attemptedSearch["id"];
             int levelID = attemptedSearchWithID.asInt().unwrapOr(-1);
-            log::info("levelID: {}", levelID);
+            // log::info("levelID: {}", levelID);
 
             if (levelID == -1) continue;
 
             if (!first) download << ",";
             first = false;
-            
+
             download << utils::numToString(levelID);
         }
         packData->setObject(CCString::create(download.str()), "3");
