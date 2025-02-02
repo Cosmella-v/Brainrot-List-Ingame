@@ -20,9 +20,9 @@ class $modify(LevelCell) {
         (void)self.setHookPriority("LevelCell::loadFromLevel", INT_MIN/2-1); 
     }
 	void loadFromLevel(GJGameLevel* p0) {
-		 if (!BrType::LoadedAllLevels) {
-            BrType::parseRequestString(level_map);
-        }
+		if (!BrType::LoadedAllLevels) {
+			BrType::parseRequestString(level_map);
+		}
 		LevelCell::loadFromLevel(p0);
 		CCNode* difficultyNode;
 		if (Loader::get()->isModLoaded("geode.node-ids")) {
@@ -65,7 +65,7 @@ class $modify(LevelCell) {
 				mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
 				mdSpr->setAnchorPoint({0.5,0.350});
 				typeinfo_cast<CCSprite*>(difficultySpr)->setOpacity(0);
-				mdSpr->setID("BRL"_spr);
+				mdSpr->setID("brl-difficulty-sprite"_spr); // more descriptive and kebab case node ID
 			}
 
 		} 
