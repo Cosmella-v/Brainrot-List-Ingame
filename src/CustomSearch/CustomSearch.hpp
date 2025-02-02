@@ -220,7 +220,7 @@ class $modify(BRList, LevelBrowserLayer) {
     }
     void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1, int p2) {
         if (this->m_fields->MapPack_Br && this->m_searchObject->m_searchType == SearchType::MapPack) {
-            p0 = BRPacks::GetPacks(this->m_fields->m_currentPage * 10);
+            p0 = BRPacks::getMapPacks(this->m_fields->m_currentPage * 10);
         } 
         LevelBrowserLayer::loadLevelsFinished(p0, p1, p2);
         updateText();

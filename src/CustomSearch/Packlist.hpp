@@ -17,7 +17,7 @@ public:
     inline static int maxCount = 0;
     inline static int realMaxCount = 0;
 
-    inline static cocos2d::CCArray* GetPacks(int page) {
+    inline static cocos2d::CCArray* getMapPacks(int page) {
         cocos2d::CCArray* Newarrow = new cocos2d::CCArray;
         int index = offset;
         int realcount = 0;
@@ -54,12 +54,12 @@ public:
 
 private:
     static GJMapPack* createBRPack(int index, std::tuple<std::string,matjson::Value> packet) {
-        if (std::get<0>(packet).empty()) return nullptr;
-        CCDictionary* packdata = CCDictionary::create();
+        if (!std::get<1>(packet).isArray()) return nullptr;
+        CCDictionary* packData = CCDictionary::create();
         GJMapPack* pack;
         //log::debug("{}",std::get<0>(packet));
-        packdata->setObject(CCString::create(std::to_string(index)), "1");
-        packdata->setObject(CCString::create(std::get<0>(packet)), "2");
+        packData->setObject(CCString::create(std::to_string(index)), "1");
+        packData->setObject(CCString::create(std::get<0>(packet)), "2");
         std::stringstream download;
         bool first = true;
         for (auto level : std::get<1>(packet).asArray().unwrap()) {
@@ -67,14 +67,14 @@ private:
             download << std::to_string(BRPacks::level_map.at(level.asString().unwrap())["id"].asInt().unwrap());
             first = false;
         }
-        packdata->setObject(CCString::create(download.str()), "3");
+        packData->setObject(CCString::create(download.str()), "3");
 
-        packdata->setObject(CCString::create("0"), "4");
-        packdata->setObject(CCString::create("0"), "5");
-        packdata->setObject(CCString::create("6"), "6");
-        packdata->setObject(CCString::create("255,255,255"), "7");
-        packdata->setObject(CCString::create("255,255,255"), "8");
-        pack = GJMapPack::create(packdata);
+        packData->setObject(CCString::create("0"), "4");
+        packData->setObject(CCString::create("0"), "5");
+        packData->setObject(CCString::create("6"), "6");
+        packData->setObject(CCString::create("255,255,255"), "7");
+        packData->setObject(CCString::create("255,255,255"), "8");
+        pack = GJMapPack::create(packData);
         pack->setUserObject("modified-by-brl"_spr, CCBool::create(true));
         return pack;
     }
