@@ -72,7 +72,7 @@ class $modify(FixMapPackCell, MapPackCell) {
     };
     void loadFromMapPack(GJMapPack* cell) {
         MapPackCell::loadFromMapPack(cell);
-        if (cell->getUserObject("modified-by-brl")) {
+        if (cell->getUserObject("modified-by-brl"_spr)) {
             this->m_fields->m_modifiedByBRL = true;
             this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);
 
@@ -202,7 +202,7 @@ class $modify(BRList, LevelBrowserLayer) {
         this->m_fields->m_currentPage = 0;
         int page = this->m_fields->m_currentPage;
         this->m_fields->m_lowIdx = page * 10;
-        this->setUserObject("modified-by-brl", CCBool::create(true));
+        this->setUserObject("modified-by-brl"_spr, CCBool::create(true));
         LevelBrowserLayer::init(BrType::getSearchObject(10, 0, this->m_fields->MapPack_Br));
         createButton();
         hideStuff();
