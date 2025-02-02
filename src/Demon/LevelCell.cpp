@@ -33,17 +33,17 @@ class $modify(LevelCell) {
 		if (!demonpos) demonpos = BRPacks::find(p0->m_levelID);
 		if (!demonpos) return; // if it's STILL nullptr, abort
 		if (CCNode* moreDifficultiesSprite = this->getChildByIDRecursive("uproxide.more_difficulties/more-difficulties-spr")) {
-				moreDifficultiesSprite->setScale(0);
-				moreDifficultiesSprite->setVisible(false);
-				static_cast<CCSprite*>(moreDifficultiesSprite)->setOpacity(0);
-			}
-			CCSprite* mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
-			mdSpr->setPosition(difficultyPos);
-			if (mdSpr->getParent() != difficultyNode) difficultyNode->addChild(mdSpr);
-			mdSpr->setZOrder(difficultySpr->getZOrder());
-			mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
-			mdSpr->setAnchorPoint({0.5,0.350});
-			typeinfo_cast<CCSprite*>(difficultySpr)->setOpacity(0);
-			mdSpr->setID("brl-difficulty-sprite"_spr); // more descriptive and kebab case node ID
+			moreDifficultiesSprite->setScale(0);
+			moreDifficultiesSprite->setVisible(false);
+			static_cast<CCSprite*>(moreDifficultiesSprite)->setOpacity(0);
+		}
+		CCSprite* mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
+		mdSpr->setPosition(difficultyPos);
+		if (mdSpr->getParent() != difficultyNode) difficultyNode->addChild(mdSpr);
+		mdSpr->setZOrder(difficultySpr->getZOrder());
+		mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
+		mdSpr->setAnchorPoint({0.5,0.350});
+		typeinfo_cast<CCSprite*>(difficultySpr)->setOpacity(0);
+		mdSpr->setID("brl-difficulty-sprite"_spr); // more descriptive and kebab case node ID
 	}
 }; 
