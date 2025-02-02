@@ -55,7 +55,8 @@ public:
 private:
     static GJMapPack* createBRPack(int index, std::tuple<std::string,matjson::Value> packet) {
         if (!std::get<1>(packet).isArray()) return nullptr;
-        if (std::get<1>(packet).asArray().unwrap().isErr()) return nullptr;
+        auto levels = std::get<1>(packet).asArray().unwrap();
+        if (levels.empty()) return nullptr;
         CCDictionary* packData = CCDictionary::create();
         GJMapPack* pack;
         //log::debug("{}",std::get<0>(packet));
@@ -63,7 +64,7 @@ private:
         packData->setObject(CCString::create(std::get<0>(packet)), "2");
         std::stringstream download;
         bool first = true;
-        for (auto level : std::get<1>(packet).asArray().unwrap()) {
+        for (auto level : levels) {
             if (!first) download << ",";
             download << std::to_string(BRPacks::level_map.at(level.asString().unwrap())["id"].asInt().unwrap());
             first = false;
