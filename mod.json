@@ -26,10 +26,14 @@
 			"description": "Turns difficulty face to a better one",
 			"default": false
 		},
-		"custom-layers-only": {
+		"youtube-verification": {
 			"type": "bool",
-			"name": "Only show face in ",
-			"description": "Turns difficulty face to a better one",
+			"name": "Show YouTube verification",
+			"default": true
+		},
+		"brl-layer-only": {
+			"type": "bool",
+			"name": "Only show face in Integrated BRL menus",
 			"default": false
 		}
 	},
