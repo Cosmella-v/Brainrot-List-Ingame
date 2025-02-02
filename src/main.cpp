@@ -12,46 +12,43 @@ class $modify(HookSearch, LevelSearchLayer) {
 		if (!LevelSearchLayer::init(in)) {
 			return false;
 		}
-		CCNode* Filter;
-		Filter = this->getChildByID("other-filter-menu");
-		if (!Filter) {
+		CCNode* otherFilterMenu;
+		otherFilterMenu = this->getChildByID("other-filter-menu");
+		if (!otherFilterMenu) {
 			 if (!Loader::get()->isModLoaded("geode.node-ids")) {
-				 Filter = this->getChildByType<CCMenu>(0);
-				if (!Filter) {
-					return true;
-				}
+				 otherFilterMenu = this->getChildByType<CCMenu>(0);
+				if (!otherFilterMenu) return true;
 				// bug fix
-				if (!Filter->getLayout()) {
+				if (!otherFilterMenu->getLayout()) {
 					auto winSize = CCDirector::get()->getWinSize();
-					Filter->setLayout(
+					otherFilterMenu->setLayout(
 						ColumnLayout::create()
 							->setAxisReverse(true)
 							->setGap(10)
 							->setAxisAlignment(AxisAlignment::End)
 					);
-					Filter->setAnchorPoint({1, 0.5f});
-					Filter->setPosition({winSize.width - 5, Filter->getPositionY()});
-					Filter->setContentSize({Filter->getContentSize().width, winSize.height-10});
+					otherFilterMenu->setAnchorPoint({1, 0.5f});
+					otherFilterMenu->setPosition({winSize.width - 5, otherFilterMenu->getPositionY()});
+					otherFilterMenu->setContentSize({otherFilterMenu->getContentSize().width, winSize.height-10});
 				}
-			 } else {return true;}
+			 } else return true;
 		}
 		auto BRL_Button = CCMenuItemSpriteExtra::create(
 			 CircleButtonSprite::createWithSprite(
-                "list_icon.png"_spr,
-                1.1,
-               (Mod::get()->getSettingValue<bool>("dark-mode")) ? CircleBaseColor::DarkPurple : CircleBaseColor::Green,
+                "list_icon.png"_spr, 1.1,
+                (Mod::get()->getSettingValue<bool>("dark-mode")) ? CircleBaseColor::DarkPurple : CircleBaseColor::Green,
                 CircleBaseSize::Small
             ),
 			this,
-			menu_selector(HookSearch::pushbtncustom)
+			menu_selector(HookSearch::onBRLButton)
 		);
-		BRL_Button->setID("BRL/Button"_spr);
-		Filter->addChild(BRL_Button);
-		Filter->updateLayout();
+		BRL_Button->setID("brl-button"_spr); // use kebab-case for node IDs
+		otherFilterMenu->addChild(BRL_Button);
+		otherFilterMenu->updateLayout();
 		return true;
 	}
-	void pushbtncustom(CCObject*) {
-		change_scene();
+	void onBRLButton(CCObject*) {
+		switchToBRLScene();
     }
 };
 
@@ -74,7 +71,7 @@ class $modify(MenuLayer) {
 							level_map[curord] = response;
 						});
 					}
-				},nullptr);
+				}, nullptr);
 			}).detach();
 		}
 		if (BRPacks::PacksIDs.empty()) {
@@ -102,9 +99,9 @@ class $modify(MenuLayer) {
 						}
 						BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
 					}
-			},nullptr);
-		}).detach();
-    }
-	return MenuLayer::init();
-}
+				}, nullptr);
+			}).detach();
+    	}
+		return MenuLayer::init();
+	}
 };

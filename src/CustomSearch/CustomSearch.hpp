@@ -68,7 +68,7 @@ class $modify(FixMapPackCell, MapPackCell) {
 };
 
 using namespace geode::prelude;
-static void change_scene(bool mappack = false,bool init = true) {
+static void switchToBRLScene(bool mappack = false,bool init = true) {
         if (!BrType::LoadedAllLevels) {
             BrType::parseRequestString(level_map);
             BrType::filterType = -1;
@@ -104,7 +104,7 @@ double getFullDoubleTime() {
 
 class $modify(BRlist, LevelBrowserLayer) {
     static void onModify(auto& self) {
-        (void)self.setHookPriority("LevelBrowserLayer::init", INT_MIN/2-1); 
+        (void) self.setHookPriority("LevelBrowserLayer::init", INT_MIN/2-1); 
     }
     struct Fields {
         int m_currentPage = 0;
@@ -116,7 +116,7 @@ class $modify(BRlist, LevelBrowserLayer) {
     };
 
     void switchThing(CCObject*) {
-        change_scene(this->m_fields->isBrainrot,false);
+        switchToBRLScene(this->m_fields->isBrainrot,false);
     }
 
     CCNode* CreateButtonSprite() {
