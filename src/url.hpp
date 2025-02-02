@@ -139,8 +139,8 @@ static std::map<int,matjson::Value> level_map;
 inline void makeGeodeWebRequest(bool retry,std::string Url, std::function<void(matjson::Value)> fun,std::function<void()> onfail) {
     web::WebRequest().get(Url).listen(
         [=](auto getVal) {
-            auto json = getVal->json().unwrap();
-            if (json.isOk()) fun(json); 
+            auto json = getVal->json().unwrapOr("DO NOT PASS GO DO NOT COLLECT $200");
+            if (json != "DO NOT PASS GO DO NOT COLLECT $200") fun(json); 
         },
         [](auto prog) {
             // in progress
