@@ -32,6 +32,7 @@ class $modify(LevelCell) {
 					if (label) {
 						std::string mapPackName = label->getString();
 						for (auto pack : BRPacks::PacksIDs) {
+							log::info("map pack Name: {}", std::get<0>(pack));
 							if (std::get<0>(pack) == mapPackName) {
 								log::info("THIS IS A BRL MAP PACK");
 								break;
