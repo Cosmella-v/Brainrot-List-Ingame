@@ -73,7 +73,7 @@ class $modify(FixMapPackCell, MapPackCell) {
     void loadFromMapPack(GJMapPack* cell) {
         MapPackCell::loadFromMapPack(cell);
         if (cell->getUserObject("modified-by-brl"_spr)) {
-            this->m_fields->m_moddedcellforBrl = true;
+            this->m_fields->m_modifiedByBRL = true;
             this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);
 
             // no fucking node ids and rob fucked up the code
