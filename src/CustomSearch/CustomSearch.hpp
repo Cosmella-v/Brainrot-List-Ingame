@@ -89,9 +89,8 @@ class $modify(FixMapPackCell, MapPackCell) {
                     spr->setVisible(false);
                 }
             }
-            CCNode* mdSpr;
-            if (mdSpr = this->getChildByID("brl-map-pack-sprite"_spr)) {}
-            else mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
+            CCNode* mdSpr = this->getChildByID("brl-map-pack-sprite"_spr);
+            if (!mdSpr) mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
             mdSpr->setPosition(difficultyPos);
             if (mdSpr->getParent() != this) this->addChild(mdSpr);
             mdSpr->setZOrder(spr->getZOrder());
@@ -204,7 +203,7 @@ class $modify(BRList, LevelBrowserLayer) {
         this->m_fields->m_currentPage = 0;
         int page = this->m_fields->m_currentPage;
         this->m_fields->m_lowIdx = page * 10;
-        this->setUserObject("modified-by-brl"_spr_spr, CCBool::create(true));
+        this->setUserObject("modified-by-brl"_spr, CCBool::create(true));
         LevelBrowserLayer::init(BrType::getSearchObject(10, 0, this->m_fields->MapPack_Br));
         createButton();
         hideStuff();
