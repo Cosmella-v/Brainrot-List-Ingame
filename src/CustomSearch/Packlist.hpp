@@ -72,7 +72,7 @@ private:
             packdata->setObject(CCString::create("255,255,255"), "7");
             packdata->setObject(CCString::create("255,255,255"), "8");
             pack= GJMapPack::create(packdata);
-            pack->setUserObject("brl_modified",CCBool::create(true));
+            pack->setUserObject("brl_modified"_spr,CCBool::create(true));
             return pack;
         } catch (const std::exception& e) {
             //log::error("error is {}",e.what());

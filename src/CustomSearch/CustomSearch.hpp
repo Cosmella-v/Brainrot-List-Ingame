@@ -1,65 +1,74 @@
 #pragma once
+#include <Geode/Geode.hpp>
 #include <Geode/Bindings.hpp>
+
 #include <Geode/modify/DemonFilterSelectLayer.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
-#include <Geode/Geode.hpp>
-#include "BrType.hpp"
+#include <Geode/modify/GJSearchObject.hpp>
+#include <Geode/modify/MapPackCell.hpp>
+
 #include <fmt/core.h>
 #include <fmt/format.h>
-#include <Geode/modify/GJSearchObject.hpp>
 #include <fmt/chrono.h>
 #include <sstream>
 #include <time.h>
 #include <chrono>
+
+#include "BrType.hpp"
 #include "Packlist.hpp"
-#include <Geode/modify/MapPackCell.hpp>
+
 #include <Geode/utils/NodeIDs.hpp>
-using namespace geode::node_ids;
+
 #ifndef GEODE_IS_ANDROID
 #include <sys/timeb.h>
 #endif
+
 double timeBD = 0;
 double m_stopratelimit = 0;
 
+using namespace geode::prelude;
+using namespace geode::node_ids;
 using namespace std::chrono;
+
 class $modify(FixMapPackCell, MapPackCell) {
     static void onModify(auto& self) {
         (void)self.setHookPriority("MapPackCell::loadFromMapPack", INT_MIN/2); 
     }
     struct Fields {
-        bool m_moddedcellforBrl = false;
+        bool m_modifiedByBRL = false;
     };
     void loadFromMapPack(GJMapPack* cell) {
         MapPackCell::loadFromMapPack(cell);
-        if (cell->getUserObject("brl_modified")) {
-            this->m_fields->m_moddedcellforBrl = true;
-            this->m_viewButton->m_pfnSelector = (cocos2d::SEL_MenuHandler)(&FixMapPackCell::Better_onClick);
+        if (cell->getUserObject("brl_modified"_spr)) {
+            this->m_fields->m_modifiedByBRL = true;
+            this->m_viewButton->m_pfnSelector = (cocos2d::SEL_MenuHandler)(&FixMapPackCell::onBRLMapPack);
 
             // no fucking node ids and rob fucked up the code
             CCSprite* spr = this->getChildByType<CCSprite>(0);
             if (spr) {
                 cocos2d::CCPoint difficultyPos = spr->getPosition() + CCPoint { .0f, .0f };
-                for (auto item :  CCArrayExt<CCNode*>(this->getChildren())) {
-                    if (spr = typeinfo_cast<CCSprite*>(item)) {
-                        if (!item->getChildByID("BRL"_spr)) {
-                            spr->removeMeAndCleanup();
-                        }
-                    }
+                for (auto item : CCArrayExt<CCNode*>(this->getChildren())) {
+                    auto sprite = typeinfo_cast<CCSprite*>(item);
+                    if (!sprite || sprite->getChildByID("brl-map-pack-sprite"_spr)) continue;
+                    item->setVisible(false);
                 }
-                CCNode* mdSpr;
-                if (mdSpr = this->getChildByID("BRL"_spr)) {} else {mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ? CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);}
+                CCNode* mdSpr = this->getChildByID("brl-map-pack-sprite"_spr);
+                if (!mdSpr) {
+                    mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ?
+                    CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
+                }
                 mdSpr->setPosition(difficultyPos);
                 if (mdSpr->getParent() != this) this->addChild(mdSpr);
                 mdSpr->setZOrder(spr->getZOrder());
                 mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
-                mdSpr->setID("BRL"_spr);
+                mdSpr->setID("brl-map-pack-sprite"_spr);
             }
-            }
+        }
         return;
     };
 
-    void Better_onClick(CCObject*) {
-        //log::debug("Should load new scene");
+    void onBRLMapPack(CCObject*) {
+        // log::debug("Should load new scene");
         BrType::ShouldChangeText = this->m_mapPack->m_packName;
         auto browserLayer = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Type19, this->m_mapPack->m_levelStrings));
         CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
@@ -67,15 +76,14 @@ class $modify(FixMapPackCell, MapPackCell) {
 
 };
 
-using namespace geode::prelude;
 static void switchToBRLScene(bool mappack = false,bool init = true) {
         if (!BrType::LoadedAllLevels) {
             BrType::parseRequestString(level_map);
             BrType::filterType = -1;
         }
         if (mappack) {
-             BrType::MapPack_Br = true;
-              BrType::isSearchingBR = false;
+            BrType::MapPack_Br = true;
+            BrType::isSearchingBR = false;
         } else {
             BrType::isSearchingBR = true;
             BrType::MapPack_Br = false;
@@ -124,19 +132,17 @@ class $modify(BRlist, LevelBrowserLayer) {
          if (this->m_fields->MapPack_Br) {
              returns = CCMenuItemSpriteExtra::create(
                 CircleButtonSprite::createWithSprite(
-                    "list_icon.png"_spr,
-                    1.1,
+                    "list_icon.png"_spr, 1.1,
                     (Mod::get()->getSettingValue<bool>("dark-mode")) ? CircleBaseColor::DarkPurple : CircleBaseColor::Green,
                     CircleBaseSize::Small
                 ),
                 this,
                 menu_selector(BRlist::switchThing)
             );
-         } else {
+        } else {
             returns = CCMenuItemSpriteExtra::create(
                 CircleButtonSprite::createWithSprite(
-                    "mapPack.png"_spr,
-                    0.95,
+                    "mapPack.png"_spr, 0.95,
                     (Mod::get()->getSettingValue<bool>("dark-mode")) ? CircleBaseColor::DarkPurple : CircleBaseColor::Green,
                     CircleBaseSize::Small
                 ),
@@ -147,26 +153,26 @@ class $modify(BRlist, LevelBrowserLayer) {
 
         return returns;
     }
-    void genbtn() {
+    void createButton() {
          if (CCNode* spr = CreateButtonSprite()) {
-            CCMenu* Holder = CCMenu::create();
+            CCMenu* menu = CCMenu::create();
             auto winSize = CCDirector::get()->getWinSize();
-            Holder->setLayout(
+            menu->setLayout(
 						ColumnLayout::create()
 							->setAxisReverse(true)
 							->setGap(10)
 							->setAxisAlignment(AxisAlignment::End)
 					);
-			Holder->setContentSize({Holder->getContentSize().width, winSize.height-10});
-            Holder->setID("Extra"_spr);
-            Holder->setPosition({63,260});
+			menu->setContentSize({menu->getContentSize().width, winSize.height-10});
+            menu->setID("brl-extra"_spr);
+            menu->setPosition({63,260});
             if (CCNode* Child = this->getChildByIDRecursive("back-menu")) {
-                Holder->setPosition(Child->getPosition() - ccp(0.f,Child->getContentHeight()));
+                menu->setPosition(Child->getPosition() - ccp(0.f,Child->getContentHeight()));
             }
-            Holder->setAnchorPoint({1.3,0.950}); 
-            this->addChild(Holder);
-            Holder->addChild(spr);
-            Holder->updateLayout();
+            menu->setAnchorPoint({1.3,0.950}); 
+            this->addChild(menu);
+            menu->addChild(spr);
+            menu->updateLayout();
         }
 
     }
@@ -182,7 +188,7 @@ class $modify(BRlist, LevelBrowserLayer) {
             this->m_fields->m_lowIdx = page * 10;
             bool inits = LevelBrowserLayer::init(BrType::getSearchObject(10, 0, this->m_fields->MapPack_Br));
             updText();
-            genbtn();
+            createButton();
             return inits;
         }
         if (!this->m_fields->isBrainrot) {
@@ -199,9 +205,9 @@ class $modify(BRlist, LevelBrowserLayer) {
         this->m_fields->m_currentPage = 0;
         int page = this->m_fields->m_currentPage;
         this->m_fields->m_lowIdx = page * 10;
-        this->setUserObject("brl_modified", CCBool::create(true));
+        this->setUserObject("brl_modified"_spr, CCBool::create(true));
         LevelBrowserLayer::init(BrType::getSearchObject(10, 0, this->m_fields->MapPack_Br));
-        genbtn();
+        createButton();
         hideStuff();
         return true;
     }
@@ -426,7 +432,7 @@ class $modify(BRlist, LevelBrowserLayer) {
                     islegacy = " (Legacy)";
                 }
             }
-            BrType::shownerrorxxx = false;
+            BrType::shownServerError = false;
             if (level_map.empty()) { 
                 getlistjson([=](matjson::Value response) {
                         int order = 0;
@@ -438,11 +444,11 @@ class $modify(BRlist, LevelBrowserLayer) {
                             });
                         }
                 },[=]() {
-                    if (BrType::shownerrorxxx) {
+                    if (BrType::shownServerError) {
                         return;
                     }
-                    BrType::shownerrorxxx = true;
-                    FLAlertLayer::create("Server Error","The server is unable to be reached!","OK")->show();
+                    BrType::shownServerError = true;
+                    FLAlertLayer::create("Server Error", "The server is unable to be reached!", "OK")->show();
                 });
             } if (BrType::LevelID.size() < 1 && !level_map.empty()) {
                 BrType::parseRequestString(level_map);
@@ -461,10 +467,10 @@ class $modify(BRlist, LevelBrowserLayer) {
                             BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
                         }
                 },[=]() {
-                    if (BrType::shownerrorxxx) {
+                    if (BrType::shownServerError) {
                         return;
                     }
-                    BrType::shownerrorxxx = true;
+                    BrType::shownServerError = true;
                     FLAlertLayer::create("Server Error","The server is unable to be reached!","OK")->show();
                 });
             }

@@ -12,9 +12,9 @@ class BrType {
         inline static int filterType;
         inline static bool isSearchingBR;
         inline static bool MapPack_Br = false;
-        inline static bool shownerrorxxx = false;
+        inline static bool shownServerError = false;
         inline static gd::string ShouldChangeText;
-       static std::optional<std::tuple<int, int, matjson::Value>> find(int id) {
+        static std::optional<std::tuple<int, int, matjson::Value>> find(int id) {
             auto it = std::find_if(LevelID.begin(), LevelID.end(),
             [id](const std::tuple<int, int, matjson::Value>& tuple) {
                 return std::get<1>(tuple) == id; // Compare the second element

@@ -72,7 +72,7 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 				btn->setScale(0.75);
 				auto btnee = CCMenuItemSpriteExtra::create(btn, this, menu_selector(moddedLevelInfoLayer::YoutubeLink));
 				btnee->setPosition(rightside->getPosition() + ccp(0,rightside->getContentHeight()+2));
-				btnee->setID("Youtube"_spr);
+				btnee->setID("brl-youtube-verification"_spr);
 				rightside->getParent()->addChild(btnee);
 				rightside->updateLayout();
 			}
@@ -83,7 +83,7 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 				mdSpr->setZOrder(zOrder);
 				mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
 				m_difficultySprite->setOpacity(0);
-				mdSpr->setID("BRL"_spr);
+				mdSpr->setID("brl-difficulty-sprite"_spr);
 		}
 		return true;
 	}
