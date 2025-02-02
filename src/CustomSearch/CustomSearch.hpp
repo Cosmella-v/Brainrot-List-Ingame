@@ -74,7 +74,7 @@ class $modify(FixMapPackCell, MapPackCell) {
         MapPackCell::loadFromMapPack(cell);
         if (cell->getUserObject("modified-by-brl"_spr)) {
             this->m_fields->m_moddedcellforBrl = true;
-            this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::Better_onClick);
+            this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);
 
             // no fucking node ids and rob fucked up the code
             CCSprite* spr = this->getChildByType<CCSprite>(0);
