@@ -93,6 +93,7 @@ private:
         packData->setObject(CCString::create("255,255,255"), "8");
         pack = GJMapPack::create(packData);
         pack->setUserObject("modified-by-brl", CCBool::create(true));
+        log::info("pack modified-by-brl: {}", pack->getUserObject("modified-by-brl") != nullptr);
         return pack;
     }
 };
