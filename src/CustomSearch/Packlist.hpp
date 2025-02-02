@@ -18,11 +18,11 @@ public:
         int index = offset;
         int realcount = 0;
         for (auto data : PacksIDs) {
-            realcount+=1;
+            realcount += 1;
             if (realcount < (page * 10)) {
                 continue;
             }
-            index+=1;
+            index += 1;
             //log::debug("{} . {} . {}",std::get<0>(data),std::get<1>(data),std::get<2>(data).dump());
             auto pack = BRPacks::CreateBasePack(index+(page * 10),data);
             if (pack) {

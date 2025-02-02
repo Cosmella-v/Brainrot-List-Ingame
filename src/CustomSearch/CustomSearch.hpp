@@ -242,7 +242,7 @@ class $modify(BRList, LevelBrowserLayer) {
 
         int max = 0;
         if (this->m_fields->MapPack_Br) {
-            max = BRPacks::maxcount;
+            max = BRPacks::maxCount;
         } else {
             max = ((BrType::LevelID.size()-1) / 10);
         }
@@ -257,7 +257,7 @@ class $modify(BRList, LevelBrowserLayer) {
     void lastPage(auto h) {
         int max = 0;
         if (this->m_fields->MapPack_Br) {
-            max = BRPacks::maxcount;
+            max = BRPacks::maxCount;
         } else {
             max = ((BrType::LevelID.size()-1) / 10);
         }
@@ -286,7 +286,7 @@ class $modify(BRList, LevelBrowserLayer) {
         }
         int max = 0;
         if (this->m_fields->MapPack_Br) {
-            max = BRPacks::maxcount;
+            max = BRPacks::maxCount;
         } else {
             max = ((BrType::LevelID.size()-1) / 10);
         }
@@ -307,7 +307,7 @@ class $modify(BRList, LevelBrowserLayer) {
 
         int max = 0;
         if (this->m_fields->MapPack_Br) {
-            max = BRPacks::maxcount;
+            max = BRPacks::maxCount;
         } else {
             max = (BrType::LevelID.size() / 10);
         }
@@ -331,7 +331,7 @@ class $modify(BRList, LevelBrowserLayer) {
         }
         int max = 0;
         if (this->m_fields->MapPack_Br) {
-            max = BRPacks::maxcount;
+            max = BRPacks::maxCount;
         } else {
             max = (BrType::LevelID.size() / 10);
         }
@@ -353,7 +353,7 @@ class $modify(BRList, LevelBrowserLayer) {
         if (this->m_fields->m_currentPage > 0) {
             this->m_fields->m_currentPage -= 1;
         }
-        
+
         nextBtnActions();
     }
     void loadPage(GJSearchObject* type) {
@@ -387,8 +387,8 @@ class $modify(BRList, LevelBrowserLayer) {
         int max = 0;
         int largesize = 0;
         if (this->m_fields->MapPack_Br) {
-            max = BRPacks::maxcount;
-            largesize = BRPacks::realmaxcount;
+            max = BRPacks::maxCount;
+            largesize = BRPacks::realMaxCount;
         } else {
             max = (BrType::LevelID.size() / 10);
             largesize = BrType::LevelID.size();

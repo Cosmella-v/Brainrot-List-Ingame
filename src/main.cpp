@@ -47,7 +47,7 @@ class $modify(MenuLayer) {
 						if (!item.isString()) { 
 							return log::error("reading json level map for levels (main list) is not expected (string expected)");
 						}
-						order+=1;
+						order += 1;
 						int curord = order;
 						getleveljson(item.asString().unwrap(), [=](matjson::Value response) {
 							level_map[curord] = response;
