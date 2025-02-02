@@ -43,7 +43,7 @@ class $modify(HookCreator, CreatorLayer) {
 			this,
 			menu_selector(HookCreator::prompt)
 		);
-		
+
 		brlRouletteButton->setID("brl-roulette"_spr);
 		bottomLeftMenu->addChild(brlRouletteButton);
 		bottomLeftMenu->updateLayout();

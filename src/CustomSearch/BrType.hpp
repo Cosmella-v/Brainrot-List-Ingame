@@ -1,5 +1,5 @@
-#ifndef SearchTypeHpp
-#define SearchTypeHpp
+#pragma once
+
 #include <vector>
 #include <string>
 
@@ -78,5 +78,3 @@ class BrType {
 
         
 };
-
-#endif

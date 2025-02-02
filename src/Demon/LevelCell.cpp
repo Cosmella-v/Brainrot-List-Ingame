@@ -10,8 +10,7 @@ class $modify(SetIDPopup) {
 	bool init(int current, int begin, int end, gd::string title, gd::string button, bool p5, int p6, float y, bool p8, bool p9) {
 		log::debug("{} {} {} {} {} {} {} {} {} {}",current,begin,end,title,button,p5,p6,y,p8,p9);
 		return SetIDPopup::init(current,begin,end,title,button,p5,p6,y,p8,p9);
-	};
-
+	}
 };
 */
 
@@ -27,9 +26,7 @@ class $modify(LevelCell) {
 		CCNode* difficultyNode;
 		if (Loader::get()->isModLoaded("geode.node-ids")) {
 			difficultyNode = m_mainLayer->getChildByID("difficulty-container");
-			if (!difficultyNode) {
-				return;
-			};
+			if (!difficultyNode) return;
 		}
 		CCNode* difficultySpr;
 		if (!Loader::get()->isModLoaded("geode.node-ids")) {
@@ -40,11 +37,9 @@ class $modify(LevelCell) {
 					difficultyNode = difficultySpr->getParent(); // great way without node ids
 					break;
 				}
-			};
-		} else {difficultySpr = difficultyNode->getChildByID("difficulty-sprite");}
-		if (!difficultySpr) {
-			return;
-		}
+			}
+		} else difficultySpr = difficultyNode->getChildByID("difficulty-sprite");
+		if (!difficultySpr) return;
 
 		cocos2d::CCPoint difficultyPos = difficultySpr->getPosition() + CCPoint { .0f, .0f };
 		if (difficultyNode) {

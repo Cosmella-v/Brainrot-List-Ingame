@@ -61,7 +61,7 @@ class $modify(MenuLayer) {
 				getpackjson([=](matjson::Value response) {
 					if (!response.isArray()) {
 						return log::error("reading json packs is not expected (array expected)");
-					};
+					}
 					for (auto item : response.asArray().unwrap()) {
 						//log::debug("{}", item.dump());
 						if (!item.contains("levels") || !item["levels"].isArray()) {

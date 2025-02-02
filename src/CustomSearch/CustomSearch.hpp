@@ -30,52 +30,6 @@ using namespace geode::prelude;
 using namespace geode::node_ids;
 using namespace std::chrono;
 
-class $modify(FixMapPackCell, MapPackCell) {
-    static void onModify(auto& self) {
-        (void)self.setHookPriority("MapPackCell::loadFromMapPack", -3998); 
-    }
-    struct Fields {
-        bool m_modifiedByBRL = false;
-    };
-    void loadFromMapPack(GJMapPack* cell) {
-        MapPackCell::loadFromMapPack(cell);
-        if (cell->getUserObject("brl_modified"_spr)) {
-            this->m_fields->m_modifiedByBRL = true;
-            this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);
-
-            // no fucking node ids and rob fucked up the code
-            CCSprite* spr = this->getChildByType<CCSprite>(0);
-            if (spr) {
-                cocos2d::CCPoint difficultyPos = spr->getPosition() + CCPoint { .0f, .0f };
-                for (auto item : CCArrayExt<CCNode*>(this->getChildren())) {
-                    auto sprite = typeinfo_cast<CCSprite*>(item);
-                    if (!sprite || sprite->getChildByID("brl-map-pack-sprite"_spr)) continue;
-                    item->setVisible(false);
-                }
-                CCNode* mdSpr = this->getChildByID("brl-map-pack-sprite"_spr);
-                if (!mdSpr) {
-                    mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ?
-                    CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
-                }
-                mdSpr->setPosition(difficultyPos);
-                if (mdSpr->getParent() != this) this->addChild(mdSpr);
-                mdSpr->setZOrder(spr->getZOrder());
-                mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
-                mdSpr->setID("brl-map-pack-sprite"_spr);
-            }
-        }
-        return;
-    };
-
-    void onBRLMapPack(CCObject*) {
-        // log::debug("Should load new scene");
-        BrType::ShouldChangeText = this->m_mapPack->m_packName;
-        auto browserLayer = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Type19, this->m_mapPack->m_levelStrings));
-        CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
-    }
-
-};
-
 static void switchToBRLScene(bool mappack = false,bool init = true) {
         if (!BrType::LoadedAllLevels) {
             BrType::parseRequestString(level_map);
@@ -109,6 +63,51 @@ double getFullDoubleTime() {
     #endif
 }
 
+class $modify(FixMapPackCell, MapPackCell) {
+    static void onModify(auto& self) {
+        (void)self.setHookPriority("MapPackCell::loadFromMapPack", -3998); 
+    }
+    struct Fields {
+        bool m_modifiedByBRL = false;
+    };
+    void loadFromMapPack(GJMapPack* cell) {
+        MapPackCell::loadFromMapPack(cell);
+        if (cell->getUserObject("brl_modified"_spr)) {
+            this->m_fields->m_modifiedByBRL = true;
+            this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);
+
+            // no fucking node ids and rob fucked up the code
+            CCSprite* spr = this->getChildByType<CCSprite>(0);
+            if (!spr) return;
+
+            cocos2d::CCPoint difficultyPos = spr->getPosition() + CCPoint { .0f, .0f };
+            for (auto item : CCArrayExt<CCNode*>(this->getChildren())) {
+                auto sprite = typeinfo_cast<CCSprite*>(item);
+                if (!sprite || sprite->getChildByID("brl-map-pack-sprite"_spr)) continue;
+                item->setVisible(false);
+            }
+            CCNode* mdSpr = this->getChildByID("brl-map-pack-sprite"_spr);
+            if (!mdSpr) {
+                mdSpr = (!Mod::get()->getSettingValue<bool>("better-face")) ?
+                CCSprite::create("normal_face_with_demon_text.png"_spr) : CCSprite::create("Betterface.png"_spr);
+            }
+            mdSpr->setPosition(difficultyPos);
+            if (mdSpr->getParent() != this) this->addChild(mdSpr);
+            mdSpr->setZOrder(spr->getZOrder());
+            mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
+            mdSpr->setID("brl-map-pack-sprite"_spr);
+        }
+        return;
+    }
+
+    void onBRLMapPack(CCObject*) {
+        // log::debug("Should load new scene");
+        BrType::ShouldChangeText = this->m_mapPack->m_packName;
+        auto browserLayer = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Type19, this->m_mapPack->m_levelStrings));
+        CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
+    }
+
+};
 
 class $modify(BRList, LevelBrowserLayer) {
     static void onModify(auto& self) {
@@ -127,10 +126,10 @@ class $modify(BRList, LevelBrowserLayer) {
         switchToBRLScene(this->m_fields->isBrainrot,false);
     }
 
-    CCNode* CreateButtonSprite() {
-        CCNode* returns;
+    CCNode* makeBRLButtonSprite() {
+        CCNode* nodeToReturn;
          if (this->m_fields->MapPack_Br) {
-             returns = CCMenuItemSpriteExtra::create(
+             nodeToReturn = CCMenuItemSpriteExtra::create(
                 CircleButtonSprite::createWithSprite(
                     "list_icon.png"_spr, 1.1,
                     (Mod::get()->getSettingValue<bool>("dark-mode")) ? CircleBaseColor::DarkPurple : CircleBaseColor::Green,
@@ -140,7 +139,7 @@ class $modify(BRList, LevelBrowserLayer) {
                 menu_selector(BRList::switchThing)
             );
         } else {
-            returns = CCMenuItemSpriteExtra::create(
+            nodeToReturn = CCMenuItemSpriteExtra::create(
                 CircleButtonSprite::createWithSprite(
                     "mapPack.png"_spr, 0.95,
                     (Mod::get()->getSettingValue<bool>("dark-mode")) ? CircleBaseColor::DarkPurple : CircleBaseColor::Green,
@@ -149,12 +148,12 @@ class $modify(BRList, LevelBrowserLayer) {
                 this,
                 menu_selector(BRList::switchThing)
             );
-         };
+        }
 
-        return returns;
+        return nodeToReturn;
     }
     void createButton() {
-         if (CCNode* spr = CreateButtonSprite()) {
+         if (CCNode* spr = makeBRLButtonSprite()) {
             CCMenu* menu = CCMenu::create();
             auto winSize = CCDirector::get()->getWinSize();
             menu->setLayout(
@@ -216,7 +215,7 @@ class $modify(BRList, LevelBrowserLayer) {
             if (CCNode* levelList = this->m_list) {
                 if (CCLabelBMFont* titleLabel = typeinfo_cast<CCLabelBMFont*>(levelList->getChildByID("title"))) {
                     titleLabel->setString(this->m_fields->mapPackText.c_str());
-                };
+                }
             }
         }
     }
@@ -264,15 +263,15 @@ class $modify(BRList, LevelBrowserLayer) {
         }
         if (this->m_fields->m_currentPage == max) {
             return;
-        };
+        }
         this->m_fields->m_currentPage = max;
         nextBtnActions();
     }
 
     void firstPage(auto h) {
-         if (this->m_fields->m_currentPage == 0) {
+        if (this->m_fields->m_currentPage == 0) {
             return;
-        };
+        }
         this->m_fields->m_currentPage = 0;
         nextBtnActions();
     }
@@ -304,7 +303,7 @@ class $modify(BRList, LevelBrowserLayer) {
         if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType != SearchType::MapPack) {
             return LevelBrowserLayer::setIDPopupClosed(popup,p1);
         }
-        p1-=1;
+        p1 -= 1;
 
         int max = 0;
         if (this->m_fields->MapPack_Br) {
@@ -318,7 +317,7 @@ class $modify(BRList, LevelBrowserLayer) {
         }
         if (p1 >= max) {
            return lastPage(nullptr);
-        };
+        }
         this->m_fields->m_currentPage = p1;
 
         nextBtnActions();
@@ -354,13 +353,12 @@ class $modify(BRList, LevelBrowserLayer) {
         if (this->m_fields->m_currentPage > 0) {
             this->m_fields->m_currentPage -= 1;
         }
-        nextBtnActions();
         
+        nextBtnActions();
     }
     void loadPage(GJSearchObject* type) {
         LevelBrowserLayer::loadPage(type);
         updateText();
-        return;
     }
     void fixTimeout(auto h) {
         m_stopratelimit = getFullDoubleTime() + timeBD;
@@ -472,17 +470,16 @@ class $modify(BRList, LevelBrowserLayer) {
         this->m_pageText->setString(fmt::format("{}",this->m_fields->m_currentPage+1).c_str());
     }
     void updatePageLabel() {
-            LevelBrowserLayer::updatePageLabel();
-            updateText();
-            if (!this->m_fields->isBrainrot) {
-                return;
-            }
-            if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType  != SearchType::MapPack) {
-                return;
-            }
-            if (this->m_pageBtn) {
-                this->m_pageBtn->setVisible(true);
-            }
+        LevelBrowserLayer::updatePageLabel();
+        updateText();
+        if (!this->m_fields->isBrainrot) {
+            return;
         }
+        if (this->m_searchObject->m_searchType != SearchType::Type19 && this->m_searchObject->m_searchType  != SearchType::MapPack) {
+            return;
+        }
+        if (this->m_pageBtn) {
+            this->m_pageBtn->setVisible(true);
+        }
+    }
 };
-
