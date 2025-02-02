@@ -23,11 +23,9 @@ class $modify(LevelCell) {
 			BrType::parseRequestString(level_map);
 		}
 		LevelCell::loadFromLevel(p0);
-		auto levelBrowserLayer = CCScene::get()->getChildByType<LevelBrowserLayer>(0);
-		if (levelBrowserLayer) {
-			if (!levelBrowserLayer->getUserObject("modified-by-brl"_spr) && Mod::get()->getSettingValue<bool>("brl-layer-only")) {
-				return;
-			}
+		if (Mod::get()->getSettingValue<bool>("brl-layer-only")) {
+			auto levelBrowserLayer = CCScene::get()->getChildByType<LevelBrowserLayer>(0);
+			if (levelBrowserLayer && !levelBrowserLayer->getUserObject("modified-by-brl"_spr)) return;
 		}
 		CCNode* difficultyNode = m_mainLayer->getChildByID("difficulty-container");
 		if (!difficultyNode) return;
