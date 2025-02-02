@@ -28,7 +28,7 @@ public:
             }
             index += 1;
             //log::debug("{} . {} . {}",std::get<0>(data),std::get<1>(data),std::get<2>(data).dump());
-            auto pack = BRPacks::CreateBasePack(index+(page * 10),data);
+            auto pack = BRPacks::createBRPack(index + (page * 10), data);
             if (pack) {
                 Newarrow->addObjectNew(pack);
             }
@@ -53,7 +53,8 @@ public:
     }
 
 private:
-    static GJMapPack* CreateBasePack(int index, std::tuple<std::string,matjson::Value> packet) {
+    static GJMapPack* createBRPack(int index, std::tuple<std::string,matjson::Value> packet) {
+        if (std::get<0>(packet).empty()) return nullptr;
         CCDictionary* packdata = CCDictionary::create();
         GJMapPack* pack;
         //log::debug("{}",std::get<0>(packet));
@@ -73,7 +74,7 @@ private:
         packdata->setObject(CCString::create("6"), "6");
         packdata->setObject(CCString::create("255,255,255"), "7");
         packdata->setObject(CCString::create("255,255,255"), "8");
-        pack= GJMapPack::create(packdata);
+        pack = GJMapPack::create(packdata);
         pack->setUserObject("modified-by-brl"_spr, CCBool::create(true));
         return pack;
     }
