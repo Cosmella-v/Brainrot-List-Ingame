@@ -18,29 +18,23 @@ public:
     inline static int realMaxCount = 0;
 
     inline static cocos2d::CCArray* getMapPacks(int page) {
-        cocos2d::CCArray* Newarrow = new cocos2d::CCArray;
+        cocos2d::CCArray* arrayOfMapPacks = new cocos2d::CCArray;
         int index = offset;
         int realcount = 0;
         for (auto data : PacksIDs) {
             realcount += 1;
-            if (realcount < (page * 10)) {
-                continue;
-            }
+            if (realcount < (page * 10)) continue;
             index += 1;
-            //log::debug("{} . {} . {}",std::get<0>(data),std::get<1>(data),std::get<2>(data).dump());
+            // log::debug("{} . {} . {}",std::get<0>(data),std::get<1>(data),std::get<2>(data).dump());
             auto pack = BRPacks::createBRPack(index + (page * 10), data);
-            if (pack) {
-                Newarrow->addObjectNew(pack);
-            }
-            if (realcount >= ( (page + 1) * 10)) {
-                break;
-            }
+            if (pack) arrayOfMapPacks->addObjectNew(pack);
 
+            if (realcount >= ( (page + 1) * 10)) break;
         }
         BRPacks::maxCount = ceil(PacksIDs.size() / 10);
         BRPacks::realMaxCount = PacksIDs.size();
         log::debug("BRPacks maxCount: {}", BRPacks::maxCount);
-        return Newarrow;
+        return arrayOfMapPacks;
     }
     
     static std::optional<std::tuple<int, int, matjson::Value>> find(int id) {
@@ -98,7 +92,7 @@ private:
         packData->setObject(CCString::create("255,255,255"), "7");
         packData->setObject(CCString::create("255,255,255"), "8");
         pack = GJMapPack::create(packData);
-        pack->setUserObject("modified-by-brl"_spr, CCBool::create(true));
+        pack->setUserObject("modified-by-brl", CCBool::create(true));
         return pack;
     }
 };
