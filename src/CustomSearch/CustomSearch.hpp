@@ -84,7 +84,7 @@ class $modify(FixMapPackCell, MapPackCell) {
             for (auto item : CCArrayExt<CCNode*>(this->getChildren())) {
                 auto spr = typeinfo_cast<CCSprite*>(item);
                 if (!spr) continue;
-                if (!item->getChildByID("brl-map-pack-sprite"_spr)) {
+                if (item->getID() != ("brl-map-pack-sprite"_spr)) {
                     spr->setScale(0);
                     spr->setVisible(false);
                 }
