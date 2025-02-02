@@ -72,7 +72,6 @@ class $modify(FixMapPackCell, MapPackCell) {
     };
     void loadFromMapPack(GJMapPack* cell) {
         MapPackCell::loadFromMapPack(cell);
-        log::info("modified-by-brl: {}", this->getUserObject("modified-by-brl") != nullptr);
         if (this->getUserObject("modified-by-brl")) {
             this->m_fields->m_modifiedByBRL = true;
             this->m_viewButton->m_pfnSelector = menu_selector(FixMapPackCell::onBRLMapPack);
@@ -102,6 +101,7 @@ class $modify(FixMapPackCell, MapPackCell) {
 
     void onBRLMapPack(CCObject*) {
         // log::debug("Should load new scene");
+        log::info("this->m_mapPack->m_levelStrings: {}", this->m_mapPack->m_levelStrings);
         BrType::ShouldChangeText = this->m_mapPack->m_packName;
         auto browserLayer = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Type19, this->m_mapPack->m_levelStrings));
         CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
@@ -204,7 +204,6 @@ class $modify(BRList, LevelBrowserLayer) {
         int page = this->m_fields->m_currentPage;
         this->m_fields->m_lowIdx = page * 10;
         this->setUserObject("modified-by-brl", CCBool::create(true));
-        log::info("LevelBrowserLayer modified-by-brl: {}", this->getUserObject("modified-by-brl") != nullptr);
         LevelBrowserLayer::init(BrType::getSearchObject(10, 0, this->m_fields->MapPack_Br));
         createButton();
         hideStuff();
