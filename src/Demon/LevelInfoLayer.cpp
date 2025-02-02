@@ -44,6 +44,29 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 		mdSpr->setScale((!Mod::get()->getSettingValue<bool>("better-face")) ? 0.2 : 0.4);
 		m_difficultySprite->setOpacity(0);
 		mdSpr->setID("brl-difficulty-sprite"_spr);
+
+		if (!Mod::get()->getSettingValue<bool>("youtube-verification")) return true;
+		CCNode* menuForYTButton = nullptr;
+
+		// fuck death tracker, Why must it be like this!
+		auto deathTracker = Loader::get()->getLoadedMod("elohmrow.death_tracker");
+		if (deathTracker) {
+			if (!deathTracker->getSettingValue<bool>("left-menu")) {
+				menuForYTButton = this->getChildByIDRecursive("dt-skull-button"); 
+			}
+		}
+
+		if (!menuForYTButton) menuForYTButton = this->getChildByIDRecursive("favorite-button");
+		if (this->m_fields->jsonSavedBRL.contains("verification")) {
+			auto buttonSprite = CCSprite::createWithSpriteFrameName("gj_ytIcon_001.png");
+			buttonSprite->setScale(0.75);
+			auto button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(moddedLevelInfoLayer::onYTVerification));
+			button->setPosition(menuForYTButton->getPosition() + ccp(0,menuForYTButton->getContentHeight()+2));
+			button->setID("brl-youtube-verification"_spr);
+			menuForYTButton->getParent()->addChild(button);
+			menuForYTButton->updateLayout();
+		}
+
 		return true;
 	}
 };
