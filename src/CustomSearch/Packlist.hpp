@@ -54,6 +54,7 @@ public:
 
 private:
     static GJMapPack* createBRPack(int index, std::tuple<std::string,matjson::Value> packet) {
+        log::info("attempting to create pack: {} index, {} foobar, {} levels", index, std::get<0>(packet), std::get<1>(packet));
         if (!std::get<1>(packet).isArray()) return nullptr;
         auto levels = std::get<1>(packet).asArray().unwrap();
         if (levels.empty()) return nullptr;
