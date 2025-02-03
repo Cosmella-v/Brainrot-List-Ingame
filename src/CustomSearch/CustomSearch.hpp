@@ -44,9 +44,11 @@ static void switchToBRLScene(bool mapPack = false, bool init = true) {
         }
         if (init) {
             auto browserLayer = LevelBrowserLayer::scene(BrType::getSearchObject(10, 0, false));
+            browserLayer->setUserObject("modified-by-brl"_spr, CCBool::create(true));
             CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, browserLayer));
         } else {
             auto browserLayer = LevelBrowserLayer::create(BrType::getSearchObject(10, 0, false));
+            browserLayer->setUserObject("modified-by-brl"_spr, CCBool::create(true));
             geode::cocos::switchToScene(browserLayer);
         }
 }

@@ -28,19 +28,6 @@ class $modify(LevelCell) {
 			auto levelBrowserLayer = CCScene::get()->getChildByType<LevelBrowserLayer>(0);
 			if (levelBrowserLayer) {
 				if (!levelBrowserLayer->getUserObject("modified-by-brl"_spr)) dontDoBRLSprite = true; // for full BRL list layer
-				else if (levelBrowserLayer->m_list) {
-					auto label = levelBrowserLayer->m_list->getChildByType<CCLabelBMFont>(0);
-					if (label) {
-						std::string mapPackName = label->getString();
-						for (auto pack : BRPacks::PacksIDs) {
-							log::info("map pack Name: {}", std::get<0>(pack));
-							if (std::get<0>(pack) == mapPackName) {
-								log::info("THIS IS A BRL MAP PACK");
-								break;
-							}
-						}
-					}
-				}
 			}
 		}
 		if (dontDoBRLSprite) return;
