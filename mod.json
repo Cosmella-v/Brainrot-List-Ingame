@@ -23,9 +23,22 @@
 		"better-face": {
 			"type": "bool",
 			"name": "Better face",
-			"description": "Turns difficulty face to a better one",
+			"description": "Turns difficulty face to a \"better\" one",
+			"default": false
+		},
+		"youtube-verification": {
+			"type": "bool",
+			"name": "Show YouTube verification",
+			"default": true
+		},
+		"no-faces": {
+			"type": "bool",
+			"name": "Only show face in Integrated BRL menus",
 			"default": false
 		}
+	},
+	"dependencies": {
+		"geode.node-ids": "1.19.0"
 	},
 	"resources": {
 		"sprites": [

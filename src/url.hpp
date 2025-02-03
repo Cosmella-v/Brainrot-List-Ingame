@@ -132,65 +132,42 @@ class WebviewUrl {
         geode::utils::web::openLinkInBrowser(url);
     };
 };
-#endif;
+#endif
 
 static std::map<int,matjson::Value> level_map;
 
-inline void RequestApi(bool retry,std::string Url, std::function<void(matjson::Value)> fun,std::function<void()> onfail) {
-      web::WebRequest().get(Url).listen(
-        [=](auto getval) {
-            auto json = getval->json().unwrapOr("failed");
-            if (json == "failed") {
-                //log::error("Failed at {}",Url);
-                if (retry) {
-                     RequestApi(retry,Url,fun,onfail);
-                } else {
-                    if (!onfail) {
-                        return;
-                    } else {
-                        onfail();
-                    }
-                }
-               return;
-            }
-            fun(json); 
-        },
-        [](auto prog) {
-            
-        },
-        [=]() {
-             if (retry) {
-                     RequestApi(retry,Url,fun,onfail);
-                } else {
-                    if (!onfail) {
-                        return;
-                    } else {
-                        onfail();
-                    }
-                }
-            //log::warn("Request was cancelled.");
+inline void makeGeodeWebRequest(bool retry, std::string url, std::function<void(matjson::Value)> fun, std::function<void()> onFail) {
+      web::WebRequest().get(url).listen(
+        [=](auto getVal) {
+            auto jsonUnwrapped = getVal->json().unwrapOr("REQUEST HAS FAILED");
+            if (jsonUnwrapped == "REQUEST HAS FAILED") return log::error("Failed at {}", url);
+            fun(jsonUnwrapped); 
+        }, [](auto prog) {
+            // in progress
+        }, [=]() {
+            log::warn("request was cancelled");
         }
     );
 }
 
-inline static void getlistjson(std::function<void(matjson::Value)> fun,std::function<void()> failed) {
+inline static void getBRListJSON(std::function<void(matjson::Value)> fun, std::function<void()> failed) {
    //log::debug("should send https://br-list.pages.dev/data/_list.json");
-    RequestApi(false,"https://br-list.pages.dev/data/_list.json", fun,failed);
+    makeGeodeWebRequest(false, "https://br-list.pages.dev/data/_list.json", fun, failed);
 }
 
-inline static void getpackjson(std::function<void(matjson::Value)> fun,std::function<void()> failed) {
-    RequestApi(false,"https://br-list.pages.dev/data/_packlist.json", fun,failed);
+inline static void getBRPackJSON(std::function<void(matjson::Value)> fun, std::function<void()> failed) {
+    makeGeodeWebRequest(false, "https://br-list.pages.dev/data/_packlist.json", fun, failed);
 }
 
-inline static void getleveljson(const std::string& name, std::function<void(matjson::Value)> fun) {
-    std::string finalurl;
+inline static void getBRLevelJSON(const std::string& name, std::function<void(matjson::Value)> fun) {
+    std::string finalURL;
     for (char c : name) {
         if (c == ' ') {
-            finalurl += "%20"; 
+            finalURL += "%20"; 
         } else {
-            finalurl += c; 
+            finalURL += c; 
         }
     }
     //log::debug("getting info for {}",name);
-    RequestApi(true,"https://br-list.pages.dev/data/" + finalurl + ".json", fun,nullptr);
+    makeGeodeWebRequest(true, fmt::format("https://br-list.pages.dev/data/{}.json", finalURL), fun, nullptr);
 }
