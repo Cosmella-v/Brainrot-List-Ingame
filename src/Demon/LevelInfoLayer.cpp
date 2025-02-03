@@ -21,7 +21,7 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 	bool init(GJGameLevel* p0, bool p1) {
 		if (!LevelInfoLayer::init(p0, p1)) return false;
 
-		if (!m_difficultySprite) return true;
+		if (Mod::get()->getSettingValue<bool>("no-faces") || !m_difficultySprite) return true;
 
 		cocos2d::CCPoint difficultyPos = m_difficultySprite->getPosition() + CCPoint { .0f, .0f };
 		int zOrder = m_difficultySprite->getZOrder();
@@ -58,7 +58,7 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
 
 		if (!menuForYTButton) menuForYTButton = this->getChildByIDRecursive("favorite-button");
 		if (!menuForYTButton) return true;
-		
+
 		auto buttonSprite = CCSprite::createWithSpriteFrameName("gj_ytIcon_001.png");
 		buttonSprite->setScale(0.75);
 		auto button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(moddedLevelInfoLayer::onYTVerification));

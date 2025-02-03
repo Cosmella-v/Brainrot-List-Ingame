@@ -23,15 +23,8 @@ class $modify(LevelCell) {
 			BrType::parseRequestString(level_map);
 		}
 		LevelCell::loadFromLevel(p0);
-		bool dontDoBRLSprite = false;
-		if (Mod::get()->getSettingValue<bool>("brl-layer-only")) {
-			auto levelBrowserLayer = CCScene::get()->getChildByType<LevelBrowserLayer>(0);
-			if (levelBrowserLayer) {
-				if (!levelBrowserLayer->getUserObject("modified-by-brl"_spr)) dontDoBRLSprite = true; // for full BRL list layer
-			}
-		}
-		if (dontDoBRLSprite) return;
-
+		if (Mod::get()->getSettingValue<bool>("no-faces")) return;
+		
 		CCNode* difficultyNode = m_mainLayer->getChildByID("difficulty-container");
 		if (!difficultyNode) return;
 		CCNode* difficultySpr = difficultyNode->getChildByID("difficulty-sprite");
