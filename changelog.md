@@ -1,4 +1,5 @@
 # 1.2.0
+## Thanks Erymanthus (RayDeeUx) for this update!
 - Add toggles for difficulty faces and YT verification buttons.
 - Require Node IDs.
     - Let's be honest for a second: the effort necessary to work around the lack of node IDs being in someone's installed list is not worth it.
