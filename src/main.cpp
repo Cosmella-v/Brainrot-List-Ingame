@@ -1,5 +1,4 @@
 #include <Geode/Geode.hpp>
-#include <Geode/modify/MenuLayer.hpp>
 #include "url.hpp" 
 #include "CustomSearch/Packlist.hpp" 
 #include "CustomSearch/CustomSearch.hpp" 
@@ -33,12 +32,10 @@ class $modify(HookSearch, LevelSearchLayer) {
 		switchToBRLScene();
     }
 };
-
-class $modify(MenuLayer) {
-    bool init() {
-		if (!MenuLayer::init()) return false;
-		if (level_map.empty()) {
-			std::thread([=] {  
+$on_mod(Loaded)
+{
+Loader::get()->queueInMainThread([=]{
+if (level_map.empty()) {
 				getBRListJSON([=](matjson::Value response) {
 					if (!response.isArray()) {
 						return log::error("reading json is not expected (array expected)");
@@ -55,10 +52,8 @@ class $modify(MenuLayer) {
 						});
 					}
 				}, nullptr);
-			}).detach();
 		}
 		if (BRPacks::PacksIDs.empty()) {
-			std::thread([=] {
 				getBRPackJSON([=](matjson::Value response) {
 					if (!response.isArray()) {
 						return log::error("reading json packs is not expected (array expected)");
@@ -83,8 +78,7 @@ class $modify(MenuLayer) {
 						BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
 					}
 				}, nullptr);
-			}).detach();
     	}
-		return true;
-	}
-};
+	});
+}
+

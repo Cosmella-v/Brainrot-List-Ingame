@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
-#include <Geode/Bindings.hpp>
 #include <vector>
 #include <string>
 
@@ -17,8 +16,8 @@ public:
     inline static int maxCount = 0;
     inline static int realMaxCount = 0;
 
-    inline static cocos2d::CCArray* getMapPacks(int page) {
-        cocos2d::CCArray* arrayOfMapPacks = new cocos2d::CCArray;
+    static CCArray* getMapPacks(int page) {
+        CCArray* arrayOfMapPacks = CCArray::create();
         int index = offset;
         int realcount = 0;
         for (auto data : PacksIDs) {

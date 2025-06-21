@@ -1,8 +1,10 @@
 {
-	"geode": "4.1.1",
+	"geode": "4.5.0",
 	"gd": {
 		"win": "2.2074",
-		"android": "2.2074"
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
 	},
 	"id": "viper.br_list",
 	"name": "Integrated BRL",
@@ -10,7 +12,7 @@
 		"source": "https://github.com/MuhXd/Brainrot-List-Ingame"
 	},
 	"tags" : ["online","joke"],
-	"version": "v1.1.1",
+	"version": "v1.2.0",
 	"developer": "Viper",
 	"description": "Be able to view the BRL ingame",
 	"settings": {

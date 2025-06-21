@@ -113,7 +113,7 @@ class $modify(FixMapPackCell, MapPackCell) {
 
 class $modify(BRList, LevelBrowserLayer) {
     static void onModify(auto& self) {
-        (void) self.setHookPriority("LevelBrowserLayer::init", -3998); 
+        (void) self.setHookPriority("LevelBrowserLayer::init", -300); 
     }
     struct Fields {
         int m_currentPage = 0;
@@ -245,7 +245,7 @@ class $modify(BRList, LevelBrowserLayer) {
         if (this->m_fields->MapPack_Br) {
             max = BRPacks::maxCount;
         } else {
-            max = ((BrType::LevelID.size()-1) / 10);
+            max = std::floor((BrType::LevelID.size()) / 10) - 1;
         }
 
         if (this->m_fields->m_currentPage <= 0) {
@@ -260,7 +260,7 @@ class $modify(BRList, LevelBrowserLayer) {
         if (this->m_fields->MapPack_Br) {
             max = BRPacks::maxCount;
         } else {
-            max = ((BrType::LevelID.size()-1) / 10);
+            max = std::floor((BrType::LevelID.size()) / 10) - 1;
         }
         if (this->m_fields->m_currentPage == max) {
             return;
@@ -289,7 +289,7 @@ class $modify(BRList, LevelBrowserLayer) {
         if (this->m_fields->MapPack_Br) {
             max = BRPacks::maxCount;
         } else {
-            max = ((BrType::LevelID.size()-1) / 10);
+            max = std::floor((BrType::LevelID.size()) / 10) - 1;
         }
         if (this->m_fields->m_currentPage < max) {
             this->m_fields->m_currentPage += 1;
@@ -310,7 +310,7 @@ class $modify(BRList, LevelBrowserLayer) {
         if (this->m_fields->MapPack_Br) {
             max = BRPacks::maxCount;
         } else {
-            max = (BrType::LevelID.size() / 10);
+            max = std::floor(BrType::LevelID.size() / 10) - 1;
         }
 
         if (this->m_fields->m_currentPage == p1) {
@@ -334,7 +334,7 @@ class $modify(BRList, LevelBrowserLayer) {
         if (this->m_fields->MapPack_Br) {
             max = BRPacks::maxCount;
         } else {
-            max = (BrType::LevelID.size() / 10);
+            max = std::floor(BrType::LevelID.size() / 10);
         }
 
         SetIDPopup* popup = SetIDPopup::create(this->m_fields->m_currentPage + 1, 1, (max), "Go to Page", "OK", true, 1, 60, false, false);
@@ -363,7 +363,7 @@ class $modify(BRList, LevelBrowserLayer) {
     }
     void fixTimeout(auto h) {
         m_stopratelimit = getFullDoubleTime() + timeBD;
-        BRList::loadPage(BrType::getSearchObject( ((BrType::LevelID.size() - 10 - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) * -1, (((BrType::LevelID.size()) - this->m_fields->m_currentPage * 10) - BrType::LevelID.size()) * -1,this->m_fields->MapPack_Br ));
+        BRList::loadPage(BrType::getSearchObject((10 + this->m_fields->m_currentPage * 10),(this->m_fields->m_currentPage * 10),this->m_fields->MapPack_Br));
         this->m_pageBtn->setVisible(true);
         if (CCNode* betterInfoFirstPage = this->getChildByIDRecursive("cvolton.betterinfo/first-button")) {
             betterInfoFirstPage->setVisible(this->m_fields->m_currentPage != 0);
@@ -391,7 +391,7 @@ class $modify(BRList, LevelBrowserLayer) {
             max = BRPacks::maxCount;
             largesize = BRPacks::realMaxCount;
         } else {
-            max = (BrType::LevelID.size() / 10);
+            max = std::floor(BrType::LevelID.size() / 10) - 1;
             largesize = BrType::LevelID.size();
         }
 
