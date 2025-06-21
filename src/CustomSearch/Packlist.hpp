@@ -26,7 +26,7 @@ public:
             index += 1;
             // log::debug("{} . {} . {}",std::get<0>(data),std::get<1>(data),std::get<2>(data).dump());
             auto pack = BRPacks::createBRPack(index + (page * 10), data);
-            if (pack) arrayOfMapPacks->addObjectNew(pack);
+            if (pack) arrayOfMapPacks->addObject(pack);
 
             if (realcount >= ( (page + 1) * 10)) break;
         }
