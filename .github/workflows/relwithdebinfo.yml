@@ -1,11 +1,7 @@
 name: RelWithDebInfo
 
-# you can build but not auto
-#on:
-#  workflow_dispatch:
-#  push:
-#    branches:
-#      - "**"
+on:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -16,8 +12,8 @@ jobs:
         - name: Windows
           os: windows-latest
           
-        #- name: macOS
-        #  os: macos-latest
+        - name: macOS
+          os: macos-latest
 
         - name: Android32
           os: ubuntu-latest
@@ -27,9 +23,9 @@ jobs:
           os: ubuntu-latest
           target: Android64
 
-        #- name: iOS
-        #  os: macos-latest
-        #  target: iOS
+        - name: iOS
+          os: macos-latest
+          target: iOS
 
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
@@ -40,6 +36,8 @@ jobs:
       - name: RelWithDebInfo
         uses: geode-sdk/build-geode-mod@main
         with:
+          bindings: RayDeeUx/bindings
+          bindings-ref: "holy-fuck-viper-stop-working-on-this-dogshit-mod"
           build-config: RelWithDebInfo # [vscode] comment this out (and the line below!) to Release mode
           export-pdb: true # [vscode] comment this out (and the line above!) to Release mode
           combine: true
