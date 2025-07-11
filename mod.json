@@ -1,10 +1,10 @@
 {
-	"geode": "4.5.0",
+	"geode": "4.4.0",
 	"gd": {
 		"win": "2.2074",
-		"android": "2.2074",
 		"mac": "2.2074",
-		"ios": "2.2074"
+		"ios": "2.2074",
+		"android": "2.2074"
 	},
 	"id": "viper.br_list",
 	"name": "Integrated BRL",
@@ -14,7 +14,7 @@
 	"tags" : ["online","joke"],
 	"version": "v1.2.0",
 	"developer": "Viper",
-	"description": "Be able to view the BRL ingame",
+	"description": "View the BRL in-game.",
 	"settings": {
 		"dark-mode": {
 			"type": "bool",
