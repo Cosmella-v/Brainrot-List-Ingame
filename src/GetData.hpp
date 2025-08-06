@@ -24,7 +24,7 @@ public:
                         }
                     }, failed);
             }
-    }
+    };
     static void Packs(std::function<void()> failed = [](){}) {
         if (BRPacks::PacksIDs.empty()) {
                     getBRPackJSON([=](matjson::Value response) {
@@ -54,5 +54,5 @@ public:
                         }
                     }, failed);
             }
-    }
-}
+    };
+};

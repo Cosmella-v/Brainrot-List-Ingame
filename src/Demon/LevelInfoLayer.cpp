@@ -11,8 +11,8 @@ class $modify(moddedLevelInfoLayer,LevelInfoLayer) {
     }
 	void onYTVerification(CCObject*) {
 		if (!this->m_fields->jsonSavedBRL.contains("verification") || !this->m_fields->jsonSavedBRL["verification"].isString()) return; // the field is wrong smh
-		std::string VideoLink = WebviewUrl::ConvertToEmbed(this->m_fields->jsonSavedBRL["verification"].asString().unwrapOr(""));
-		if (!VideoLink.isOk()) return;
+		std::string VideoLink = WebviewUrl::ConvertToEmbed(this->m_fields->jsonSavedBRL["verification"].asString().unwrapOr("failure"));
+		if (VideoLink == "failure") return;
 		WebviewUrl::Open(VideoLink,this->m_level->m_levelName);
 	}
 	struct Fields {
