@@ -1,8 +1,6 @@
 #pragma once
 #include "url.hpp" 
 #include "CustomSearch/Packlist.hpp" 
-#include "CustomSearch/CustomSearch.hpp" 
-
 class brlist {
 public:
     static void MainList(std::function<void()> failed = [](){}) {

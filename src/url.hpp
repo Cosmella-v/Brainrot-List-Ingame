@@ -26,13 +26,16 @@ inline void makeGeodeWebRequest(bool retry, std::string url, std::function<void(
       web::WebRequest().get(url).listen(
         [=](auto getVal) {
             auto jsonUnwrapped = getVal->json();
-            if (!jsonUnwrapped.isOk()) { log::error("Failed at {}", url); return onFail(); }
+            if (!jsonUnwrappAed.isOk()) { 
+                if (onFail) onFail();
+                return log::error("Failed at {}", url);
+            }
             processFunction(jsonUnwrapped.unwrapOrDefault()); 
         }, [](auto prog) {
             // in progress
         }, [=]() {
-            log::warn("request was cancelled");
-            return onFail(); // handle it as a fail
+            if (onFail) onFail();
+            return log::warn("request was cancelled");
         }
     );
 }

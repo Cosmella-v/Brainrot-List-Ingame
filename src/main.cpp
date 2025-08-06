@@ -1,6 +1,8 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelSearchLayer.hpp>
 #include "GetData.hpp"
+#include "CustomSearch/CustomSearch.hpp" 
+
 using namespace geode::prelude;
 
 class $modify(HookSearch, LevelSearchLayer) {
