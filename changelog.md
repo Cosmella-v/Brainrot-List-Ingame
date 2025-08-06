@@ -1,3 +1,9 @@
+# 1.2.2
+- fixed unwraps being strange and checking being weird
+- fixed copied code
+- fixed failed popup not working
+# 1.2.1
+- slight changes and bug fixes
 # 1.2.0
 - Add toggles for difficulty faces and YT verification buttons.
 - Require Node IDs.
