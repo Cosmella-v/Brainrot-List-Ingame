@@ -32,13 +32,14 @@ public:
         }
         BRPacks::maxCount = ceil(PacksIDs.size() / 10);
         BRPacks::realMaxCount = PacksIDs.size();
-        log::debug("BRPacks maxCount: {}", BRPacks::maxCount);
+        //log::debug("BRPacks maxCount: {}", BRPacks::maxCount);
         return arrayOfMapPacks;
     }
     
     static std::optional<std::tuple<int, int, matjson::Value>> find(int id) {
         auto letme = levelid_map.find(id);
         if (letme != levelid_map.end()) {
+            if (!letme->second.contains("id") || !letme->second["id"].isInt()) { return std::nullopt; };
             return std::make_optional(std::make_tuple(200, letme->second["id"].asInt().unwrap(), letme->second));
         } else {
             return std::nullopt; 

@@ -16,6 +16,7 @@
 
 #include "BrType.hpp"
 #include "Packlist.hpp"
+#include "../GetData.hpp"
 
 #include <Geode/utils/NodeIDs.hpp>
 
@@ -426,47 +427,23 @@ class $modify(BRList, LevelBrowserLayer) {
             }
         }
         BrType::shownServerError = false;
-        if (level_map.empty()) { 
-            getBRListJSON([=](matjson::Value response) {
-                int order = 0;
-                for (const auto& item : response.asArray().unwrap()) {
-                    order += 1;
-                    int curord = order;
-                    getBRLevelJSON(item.asString().unwrap(), [=](matjson::Value response) {
-                        level_map[curord] = response;
-                    });
-                }
-            },[=]() {
-                if (BrType::shownServerError) {
-                    return;
-                }
-                BrType::shownServerError = true;
-                FLAlertLayer::create("Server Error", "The server is unable to be reached!", "OK")->show();
-            });
-        } if (BrType::LevelID.size() < 1 && !level_map.empty()) {
+        brlist::MainList([=]() {
+            if (BrType::shownServerError) {
+                return;
+            }
+            BrType::shownServerError = true;
+            FLAlertLayer::create("Server Error", "The server is unable to be reached!", "OK")->show();
+        });
+         if (BrType::LevelID.size() < 1 && !level_map.empty()) {
             BrType::parseRequestString(level_map);
         }
-
-        if (BRPacks::PacksIDs.empty()) {
-            getBRPackJSON([=](matjson::Value response) {
-                for (auto item : response.asArray().unwrap()) {
-                    log::debug("{}", item.dump());
-                    for (const auto& lels : item["levels"].asArray().unwrap()) {
-                        getBRLevelJSON(lels.asString().unwrap(), [=](matjson::Value response) {
-                            BRPacks::level_map[lels.asString().unwrap()] = response;
-                            BRPacks::levelid_map[response["id"].asInt().unwrap()] = response;
-                        });
-                    }
-                    BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
-                }
-            },[=]() {
-                if (BrType::shownServerError) {
-                    return;
-                }
-                BrType::shownServerError = true;
-                FLAlertLayer::create("Server Error", "The server is unable to be reached!", "OK")->show();
-            });
-        }
+        brlist::Packs([=]() {
+            if (BrType::shownServerError) {
+                return;
+            }
+            BrType::shownServerError = true;
+            FLAlertLayer::create("Server Error", "The server is unable to be reached!", "OK")->show();
+        });
         this->m_countText->setString((fmt::format("{} to {}{} of {}",clamp((this->m_fields->m_currentPage) * 10+1,0,largesize),clamp((this->m_fields->m_currentPage+1) * 10, 0,largesize),islegacy ,largesize ).c_str()));
         this->m_pageText->setString(fmt::format("{}",this->m_fields->m_currentPage+1).c_str());
     }
