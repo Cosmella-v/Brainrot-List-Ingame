@@ -26,7 +26,7 @@ inline void makeGeodeWebRequest(bool retry, std::string url, std::function<void(
       web::WebRequest().get(url).listen(
         [=](auto getVal) {
             auto jsonUnwrapped = getVal->json();
-            if (!jsonUnwrappAed.isOk()) { 
+            if (!jsonUnwrapped.isOk()) { 
                 if (onFail) onFail();
                 return log::error("Failed at {}", url);
             }
