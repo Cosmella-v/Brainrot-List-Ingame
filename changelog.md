@@ -1,3 +1,5 @@
+# 1.2.3
+- fix packs being duped
 # 1.2.2
 - fixed unwraps being strange and checking being weird
 - fixed copied code

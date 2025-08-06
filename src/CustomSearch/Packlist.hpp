@@ -24,7 +24,7 @@ public:
             realcount += 1;
             if (realcount < (page * 10)) continue;
             index += 1;
-            // log::debug("{} . {} . {}",std::get<0>(data),std::get<1>(data),std::get<2>(data).dump());
+            //log::debug("{} . {} . {}",std::get<0>(data),std::get<1>(data),std::get<2>(data).dump());
             auto pack = BRPacks::createBRPack(index + (page * 10), data);
             if (pack) arrayOfMapPacks->addObject(pack);
 
@@ -49,7 +49,7 @@ public:
 private:
     static GJMapPack* createBRPack(int mapPackID, std::tuple<std::string,matjson::Value> packet) {
         std::string mapPackName = std::get<0>(packet);
-        // log::info("attempting to create pack: map pack ID {}, map pack name {}", mapPackID, mapPackName);
+        //log::info("attempting to create pack: map pack ID {}, map pack name {}", mapPackID, mapPackName);
         if (!std::get<1>(packet).isArray()) return nullptr;
 
         auto levels = std::get<1>(packet).asArray().unwrap();

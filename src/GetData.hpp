@@ -47,8 +47,8 @@ public:
                                         BRPacks::levelid_map[response["id"].asInt().unwrap()] = response;
                                     });
                                 }
-                                BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
                             }
+                            BRPacks::PacksIDs.emplace_back(item["name"].asString().unwrap(),item["levels"]);
                         }
                     }, failed);
             }
