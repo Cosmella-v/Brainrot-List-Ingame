@@ -25,9 +25,9 @@ static std::map<int,matjson::Value> level_map;
 inline void makeGeodeWebRequest(bool retry, std::string url, std::function<void(matjson::Value)> processFunction, std::function<void()> onFail) {
       web::WebRequest().get(url).listen(
         [=](auto getVal) {
-            auto jsonUnwrapped = getVal->json().unwrapOr("");
-            if (!getVal->isOk()) { log::error("Failed at {}", url); return onFail(); }
-            processFunction(jsonUnwrapped); 
+            auto jsonUnwrapped = getVal->json();
+            if (!jsonUnwrapped.isOk()) { log::error("Failed at {}", url); return onFail(); }
+            processFunction(jsonUnwrapped.unwrapOrDefault()); 
         }, [](auto prog) {
             // in progress
         }, [=]() {
