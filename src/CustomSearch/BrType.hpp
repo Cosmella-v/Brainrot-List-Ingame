@@ -31,8 +31,8 @@ class BrType {
        inline static void parseRequestString(const std::map<int, matjson::Value> level_map) {
             LevelID.clear();
             for (const auto& [key, value] : level_map) {
-                if (value.contains("id") && value["id"].isInt()) {
-                    int ids = value["id"].asInt().unwrap();
+                if (value.contains("id") && value["id"].isNumber()) {
+                    int ids = value["id"].asInt().unwrapOr(0);
                     if (ids < 0) {
                         ids*=-1;
                     }

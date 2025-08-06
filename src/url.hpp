@@ -32,7 +32,7 @@ inline void makeGeodeWebRequest(bool retry, std::string url, std::function<void(
             // in progress
         }, [=]() {
             log::warn("request was cancelled");
-            return onFail() // handle it as a fail
+            return onFail(); // handle it as a fail
         }
     );
 }
